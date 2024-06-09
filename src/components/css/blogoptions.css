@@ -1,0 +1,64 @@
+@import url(https://db.onlinewebfonts.com/c/81db551dd19e720ed0bc40dbde312130?family=Beausite+Classic+Regular);
+
+@font-face {
+    font-family: "Beausite Classic Regular";
+    src: url("https://db.onlinewebfonts.com/t/81db551dd19e720ed0bc40dbde312130.eot");
+    src: url("https://db.onlinewebfonts.com/t/81db551dd19e720ed0bc40dbde312130.eot?#iefix")format("embedded-opentype"),
+    url("https://db.onlinewebfonts.com/t/81db551dd19e720ed0bc40dbde312130.woff2")format("woff2"),
+    url("https://db.onlinewebfonts.com/t/81db551dd19e720ed0bc40dbde312130.woff")format("woff"),
+    url("https://db.onlinewebfonts.com/t/81db551dd19e720ed0bc40dbde312130.ttf")format("truetype"),
+    url("https://db.onlinewebfonts.com/t/81db551dd19e720ed0bc40dbde312130.svg#Beausite Classic Regular")format("svg");
+}
+
+.conata {
+    display: flex;
+    max-width: 1200px;
+    height: 100vh;
+    margin: 40px auto;
+}
+
+.topichead{
+    font-size: 42px;
+    /* color: rgb(220, 216, 216); */
+}
+
+.topicheadx{
+    font-size: 42px;
+    background: rgb(245,245,245);
+    background: linear-gradient(193deg, rgba(245,245,245,1) 0%, rgba(120,86,255,1) 81%, rgba(250,250,250,1) 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+}
+
+.topic-head-footer p{
+    font-size: 14px;
+    font-family: "Beausite Classic Regular";
+    /* color: #646CFF; */
+    color: rgb(107, 107, 107);
+}
+
+.follow{
+    background-color: #7856ff;
+    padding: 5px 15px;
+    border-radius: 15px;
+    color: aliceblue;
+}
+
+.rch{
+    font-weight: 500;
+}
+
+.topic-body{
+    display: -webkit-box;
+    -webkit-box-orient: vertical;
+    /* text-align: justify; */
+    overflow: hidden;
+    -webkit-line-clamp: 2;
+    text-align: justify;
+}
+
+.topic-title:hover{
+    color: #646CFF;
+    transition: all 0.3s ease;
+    
+}
