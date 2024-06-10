@@ -14,7 +14,9 @@ import MainblogLoader from '../user-credientials/MainblogLoader';
 import { useDispatch } from 'react-redux';
 import { set_user_info } from '../state';
 
+// import process from 'process';
 
+// dotenv.config();
 
 export default function Mainpage() {
     const containerRef = useRef(null);
@@ -25,8 +27,7 @@ export default function Mainpage() {
     const [issavedblog, setIsSavedBlog] = useState(false);
     const [isLoading, setIsLoading] = useState(true);
     const asc = Cookies.get('accessToken')
-    // const [screenWidth, setScreenWidth] = useState(window.innerWidth);
-    // const [screenHeight, setScreenHeight] = useState(window.innerHeight);
+
     const [scrollPosition, setScrollPosition] = useState(0);
     const [scrollLength, setScrollLength] = useState(0);
     const [savedblogId, setSavedBlogId] = useState([]);
@@ -34,22 +35,17 @@ export default function Mainpage() {
 
     const dispatch = useDispatch();
 
-    // const handleResize = () => {
-    //     setScreenWidth(window.innerWidth);
-    //     setScreenHeight(window.innerHeight);
-    // };
+    const base_url = import.meta.env.VITE_URL || 'http://localhost:8080';
 
     const topics = ['Economics', 'Stocks', 'Artificial Intelligence', 'Technology', 'Architecture', 'Finance', 'Travel', 'Programming', 'Lifestyle', 'Science'];
 
     useEffect(() => {
         const fetchBlogs = async () => {
             try {
-                // https://test123-pzg9.onrender.com/
-                // const mostpopular = await axios.get('https://test123-pzg9.onrender.com/api/popular');
-                // console.log("most popular ", mostpopular.data);
-                // setPopularBlogs(mostpopular.data);
-
-                const allBlogsResponse = await axios.get('https://testingfinal.onrender.com/api/getblog');
+                
+                // console.log("dfg",import.meta.env.VITE_URL);
+                
+                const allBlogsResponse = await axios.get(`${base_url}/api/getblog`);
                 // console.log("all blogs ", allBlogsResponse.data);
                 setBlogs(allBlogsResponse.data);
                 if (allBlogsResponse.data.length > 0) {
@@ -58,7 +54,7 @@ export default function Mainpage() {
 
                 if (username) {
 
-                    const recentlySavedResponse = await axios.get(`https://testingfinal.onrender.com/api/recentlysaved/${username}`);
+                    const recentlySavedResponse = await axios.get(`${base_url}/api/recentlysaved/${username}`);
                     if (recentlySavedResponse.data.message === "No saved blogs") {
                         // console.log("No saved blogs found");
                     } else {
@@ -67,11 +63,9 @@ export default function Mainpage() {
                         const { blog_id, profile_pic } = recentlySavedResponse.data;
                         
                         setSavedBlogId(recentlySavedResponse.data.blog_id);
-                        // console.log("profile pic ",profile_pic);
+                       
                         setProfilePic(recentlySavedResponse.data.profile_pic);
-                        // dispatch(set_user_info({ profile_pic: profile_pic }))
-                        // dispatch(set_user_info({ profile_pic: profile_pic }))
-                        // console.log("xsfs", profilepic);
+             
                         setIsSavedBlog(true);
                     }
                 } else {
@@ -90,7 +84,7 @@ export default function Mainpage() {
 
     const handlesave = async (id) => {
         try {
-            const res = await axios.post('https://testingfinal.onrender.com/api/saveblog', {
+            const res = await axios.post(`${base_url}/api/saveblog`, {
                 username: username,
                 blog_id: id
             });
@@ -111,7 +105,7 @@ export default function Mainpage() {
 
     const handlecategory = async (category) => {
         try {
-            const res = await axios.get(`https://testingfinal.onrender.com/api/category/${category}`);
+            const res = await axios.get(`${base_url}/api/category/${category}`);
             // console.log(res.data);
             setBlogs(res.data);
             setActiveButton(true)
@@ -122,7 +116,7 @@ export default function Mainpage() {
 
     const fetchallblogs = async () => {
         try {
-            const res = await axios.get('https://testingfinal.onrender.com/api/getblog');
+            const res = await axios.get(`${base_url}/api/getblog`);
             // console.log(res.data);
             setBlogs(res.data);
         } catch (err) {

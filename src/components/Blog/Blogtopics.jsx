@@ -13,6 +13,8 @@ import TopicLoader from '../user-credientials/TopicLoader';
 
 export default function Blogtopics() {
 
+    const base_url = import.meta.env.VITE_URL || 'http://localhost:8080';
+
     const [blogs, setBlogs] = useState([]);
     const [totalfollowers, setTotalFollowers] = useState(0);
     const [activeButton, setActiveButton] = useState(false);   
@@ -27,8 +29,8 @@ export default function Blogtopics() {
     useEffect(() => {
         const handlecategory = async (category) => {
             try {
-                const res = await axios.get(`https://testingfinal.onrender.com/api/category/${category}`);
-                const getcategoryinfo = await axios.get(`https://testingfinal.onrender.com/api/getcategoryinfo/${category}`);
+                const res = await axios.get(`${base_url}/api/category/${category}`);
+                const getcategoryinfo = await axios.get(`${base_url}/api/getcategoryinfo/${category}`);
                 // const res = await axios.get(`http://localhost:8080/api/category/${category}`);
                 // const getcategoryinfo = await axios.get(`http://localhost:8080/api/getcategoryinfo/${category}`);
                 
@@ -56,7 +58,7 @@ export default function Blogtopics() {
             return;
         }
         try {
-            const res = await axios.post(`https://testingfinal.onrender.com/api/followcategory`, { category, username });
+            const res = await axios.post(`${base_url}/api/followcategory`, { category, username });
             // const res = await axios.post(`http://localhost:8080/api/followcategory`, { category, username });
           
             if(res.status === 200){

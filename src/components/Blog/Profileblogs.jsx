@@ -11,6 +11,10 @@ import calculatereadtime from '../Utils/Calreadtime';
 import Loader from '../user-credientials/Loader'
 
 export default function Profileblogs() {
+
+    const base_url = import.meta.env.VITE_URL || 'http://localhost:8080';
+
+
     const user_info = useSelector(state => state.user_info);
     const { username } = user_info;
     const [blogs, setBlogs] = useState([]);
@@ -19,7 +23,7 @@ export default function Profileblogs() {
     useEffect(() => {
         const getblogs = async () => {
             try {
-                const res = await axios.get(`https://testingfinal.onrender.com/api/userblog/${username}`);
+                const res = await axios.get(`${base_url}/api/userblog/${username}`);
                 // console.log(username)
                 // console.log("user blogs : ", res.data);
                 setBlogs(res.data);

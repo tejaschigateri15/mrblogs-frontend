@@ -18,6 +18,8 @@ import { useParams } from 'react-router-dom';
 
 export default function Editblog() {
 
+    const base_url = import.meta.env.VITE_URL || 'http://localhost:8080';
+
     const [text, setText] = useState('');
     const [urlimage,seturlimage] = useState('');
     const [title, setTitle] = useState('');
@@ -48,7 +50,7 @@ export default function Editblog() {
 
         const getblogbyId = async () => {
             try {
-                const res = await axios.get(`https://testingfinal.onrender.com/api/getblog/${params.id}`);
+                const res = await axios.get(`${base_url}/api/getblog/${params.id}`);
                 const {blog_image,tags} = res.data;
                 // console.log("blog data = ",res.data);
                 setTitle(res.data.title);
@@ -90,7 +92,7 @@ export default function Editblog() {
                     toast.error('Please select category');
                     return;
                 }
-                const res = await axios.post('https://testingfinal.onrender.com/api/editblog', formdata,{
+                const res = await axios.post(`${base_url}/api/editblog`, formdata,{
                     params: {
                         accessToken: accessToken,
                         blog_id: params.id

@@ -13,6 +13,9 @@ import { Toaster, toast } from 'sonner';
 import CircularProgress from '@mui/material/CircularProgress';
 
 export default function Twstest() {
+
+  const base_url = import.meta.env.VITE_URL || 'http://localhost:8080';
+
   const [image, setImage] = useState(null);
   const username = useSelector(state => state.user_info.username)
   const id = useSelector(state => state.user_info.id)
@@ -75,7 +78,7 @@ export default function Twstest() {
 
       }
 
-      const res = await axios.post('https://testingfinal.onrender.com/upload', formdatas);
+      const res = await axios.post(`${base_url}/upload`, formdatas);
 
       // console.log("Response:", res.data);
       dispatch(set_user_info({ fetchedName, id, image }))

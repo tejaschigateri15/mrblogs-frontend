@@ -12,12 +12,13 @@ export default function ShowComments() {
   const user_info = useSelector(state => state.user_info);
   const { username } = user_info;
   const {id} = user_info;
+  const base_url = import.meta.env.VITE_URL || 'http://localhost:8080';
   // const 
 
   useEffect(() => {
     const getcomments = async () => {
       try {
-        const response = await axios.get(`https://testingfinal.onrender.com/api/getallcomments/${username}`);
+        const response = await axios.get(`${base_url}/api/getallcomments/${username}`);
         setAllcomments(response.data);
         // console.log(response.data);
       } catch (error) {

@@ -8,8 +8,10 @@ import * as Emailvalid from 'email-validator'
 
 
 export default function Signup() {
+
+  const base_url = import.meta.env.VITE_URL || 'http://localhost:8080';
   
-  const url ="https://testingfinal.onrender.com/register"
+  const url =`${base_url}/register`
   // console.log("url",url);
   const [formData, setFormData] = useState({
     username: '',

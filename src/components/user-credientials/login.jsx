@@ -18,6 +18,9 @@ import Cookies from 'js-cookie'
 
 
 export default function Signin() {
+
+  const base_url = import.meta.env.VITE_URL || 'http://localhost:8080';
+
   const dispatch = useDispatch()
   const user_info = useSelector((state) => state.username)
 
@@ -45,7 +48,7 @@ export default function Signin() {
     e.preventDefault();
     console.log(formData);
     try {
-      const response = await axios.post('https://testingfinal.onrender.com/login', formData)
+      const response = await axios.post(`${base_url}/login`, formData)
       // setid(response.data)
       // console.log("fdfdfdxxxx : ", response.data)
       const { info, accessToken, refreshToken } = response.data

@@ -13,6 +13,9 @@ import { set_user_info } from "../state";
 import Cookies from "js-cookie";
 
 export default function UseProfile() {
+
+  const base_url = import.meta.env.VITE_URL || 'http://localhost:8080';
+
   const user_info = useSelector(state => state.user_info);
   const { username } = user_info;
   const accessToken = useSelector(state => state.user_info.accessToken);
@@ -39,7 +42,7 @@ export default function UseProfile() {
       const formData = new FormData();
       formData.append('image', image);
 
-      const res = await axios.post('https://testingfinal.onrender.com/upload', formData, {
+      const res = await axios.post(`${base_url}/upload`, formData, {
         headers: {
           'Content-Type': 'multipart/form-data',
         },
@@ -73,7 +76,7 @@ export default function UseProfile() {
         // return;
       }
       try {
-        const response = await axios.get(`https://testingfinal.onrender.com/api/getprofile/${username}`,
+        const response = await axios.get(`${base_url}/api/getprofile/${username}`,
          {
           params: {
             username: username,

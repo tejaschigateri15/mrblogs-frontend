@@ -17,6 +17,9 @@ import { blueGrey } from '@mui/material/colors';
 
 
 export default function Currentblog() {
+
+  const base_url = import.meta.env.VITE_URL || 'http://localhost:8080';
+
   const username = useSelector((state) => state.user_info.username);
   const user_img = useSelector((state) => state.user_info.profile_pic);
   const dispatch = useDispatch()
@@ -92,7 +95,7 @@ export default function Currentblog() {
   const handleComment = async () => {
     if (asc) {
       try {
-        const res = await axios.post('https://testingfinal.onrender.com/api/postcomment', formdata);
+        const res = await axios.post(`${base_url}/api/postcomment`, formdata);
         if (res.data) {
           // console.log('comment posted successfully');
           toast.success('Comment posted successfully', { duration: 2000 });
@@ -112,7 +115,7 @@ export default function Currentblog() {
   useEffect(() => {
     const fetchblog = async () => {
       try {
-        const res = await axios.get(`https://testingfinal.onrender.com/api/getblog/${paramss.id}`);
+        const res = await axios.get(`${base_url}/api/getblog/${paramss.id}`);
         const { author, author_img, body, date, title, blog_image, category, tags } = res.data;
         setBlog({ author, author_img, body, date, title, blog_image, category, tags });
         setDate(date.slice(0, 10));
@@ -144,7 +147,7 @@ export default function Currentblog() {
 
     const fetchProfile = async () => {
       try {
-        const response = await axios.get('https://testingfinal.onrender.com/getprofile', {
+        const response = await axios.get(`${base_url}/getprofile`, {
           params: {
             username: username
           }
@@ -161,7 +164,7 @@ export default function Currentblog() {
     fetchProfile();
 
     const fetchlikesandsaved = async () => {
-      const res = await axios.get('https://testingfinal.onrender.com/api/getlikesandsaved', {
+      const res = await axios.get(`${base_url}/api/getlikesandsaved`, {
         params: {
           username: username,
           blog_id: paramss.id
@@ -198,7 +201,7 @@ export default function Currentblog() {
   const handleLike = async () => {
     if (asc) {
       try {
-        const res = await axios.post('https://testingfinal.onrender.com/api/likeblog', { blog_id: paramss.id, username: username });
+        const res = await axios.post(`${base_url}/api/likeblog`, { blog_id: paramss.id, username: username });
         if (res.data) {
           toast.success('Blog liked successfully', { duration: 2000 });
           setIsLiked(true)
@@ -217,7 +220,7 @@ export default function Currentblog() {
 
       setIsClicked(true)
       try {
-        const res = await axios.post('https://testingfinal.onrender.com/api/summarize', { body: blogbody });
+        const res = await axios.post(`${base_url}/api/summarize`, { body: blogbody });
       
         if (res.data) {
           setIsLoading(true);
@@ -237,7 +240,7 @@ export default function Currentblog() {
   const handlesave = async (id) => {
     if (asc) {
       try {
-        const res = await axios.post('https://testingfinal.onrender.com/api/saveblog', {
+        const res = await axios.post(`${base_url}/api/saveblog`, {
           username: username,
           blog_id: id
         });

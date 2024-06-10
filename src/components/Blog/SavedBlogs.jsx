@@ -14,11 +14,12 @@ export default function SavedBlogsxx() {
     const user_info = useSelector(state => state.user_info);
     const [isLoading, setIsLoading] = useState(true);
     const { username } = user_info;
+    const base_url = import.meta.env.VITE_URL || 'http://localhost:8080';
 
     useEffect(() => {
         const getblogs = async () => {
             try {
-                const res = await axios.get(`https://testingfinal.onrender.com/api/savedblog/${username}`);
+                const res = await axios.get(`${base_url}/api/savedblog/${username}`);
                 setIsLoading(false);
                 setBlogs(res.data);
             } catch (err) {

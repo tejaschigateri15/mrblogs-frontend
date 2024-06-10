@@ -10,6 +10,8 @@ import axios from 'axios'
 
 export default function SavedBlogPage() {
 
+    const base_url = import.meta.env.VITE_URL || 'http://localhost:8080';
+
     const username = useSelector(state => state.user_info.username);
 
     const [blogs, setBlogs] = useState([]);
@@ -17,7 +19,7 @@ export default function SavedBlogPage() {
     useEffect(() => {
         const getSavedBlogs = async () => {
             try {
-                const res = await axios.get(`https://testingfinal.onrender.com/api/savedblog/${username}`);
+                const res = await axios.get(`${base_url}/api/savedblog/${username}`);
                 setBlogs(res.data);
                
             } catch (err) {

@@ -18,6 +18,8 @@ import Cookies from 'js-cookie';
 
 export default function Createblog() {
 
+    const base_url = import.meta.env.VITE_URL || 'http://localhost:8080';
+
     const [text, setText] = useState('');
     const [title, setTitle] = useState('');
     const [tag, setTag] = useState('');
@@ -64,7 +66,7 @@ export default function Createblog() {
                     toast.error('Please select category');
                     return;
                 }
-                const res = await axios.post('https://testingfinal.onrender.com/api/createblog', formdata,{
+                const res = await axios.post(`${base_url}/api/createblog`, formdata,{
                     params: {
                         accessToken: accessToken
                     }

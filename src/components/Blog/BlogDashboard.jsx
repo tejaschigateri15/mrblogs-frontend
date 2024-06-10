@@ -13,6 +13,8 @@ import MainblogLoader from '../user-credientials/MainblogLoader';
 
 export default function BlogDashboard() {
 
+  const base_url = import.meta.env.VITE_URL || 'http://localhost:8080';
+
   const [blogs, setBlogs] = useState([]);
   const [likedblog, setLikedblog] = useState({});
   const [commentedBlog, setCommentedBlog] = useState({});
@@ -22,7 +24,7 @@ export default function BlogDashboard() {
 
   async function confirmdeletex(id) {
     try {
-      const res = await axios.delete(`https://testingfinal.onrender.com/api/deleteblog/${id}`);
+      const res = await axios.delete(`${base_url}/api/deleteblog/${id}`);
       if (res.status === 200) {
         toast.success('Blog Deleted Successfully', { duration: 2000 });
         setTimeout(() => { window.location.reload() }, 2000)
@@ -58,7 +60,7 @@ export default function BlogDashboard() {
 
   async function confirmPrivate(id) {
     try {
-      const res = await axios.get(`https://testingfinal.onrender.com/api/togglePrivate/${id}`);
+      const res = await axios.get(`${base_url}/api/togglePrivate/${id}`);
       if (res.data === true) {
         toast.success('Blog Made Private Successfully', { duration: 2000 });
         setTimeout(() => { window.location.reload() }, 2000)
@@ -94,7 +96,7 @@ export default function BlogDashboard() {
   useEffect(() => {
     const getallblogs = async () => {
       try {
-        const res = await axios.get(`https://testingfinal.onrender.com/api/userblog/${username}`);
+        const res = await axios.get(`${base_url}/api/userblog/${username}`);
         setBlogs(res.data);
       } catch (err) {
         console.error(err);
