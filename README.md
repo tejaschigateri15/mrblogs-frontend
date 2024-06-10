@@ -84,9 +84,6 @@ If you'd like to contribute to this project, please follow these steps:
 4. Push to the branch: `git push origin feature/your-feature-name`
 5. Create a new Pull Request.
 
-
-## Contact
-
 If you have any questions or suggestions, feel free to reach out:
 
 - Email: [tejaschigateri15@gmail.com]
