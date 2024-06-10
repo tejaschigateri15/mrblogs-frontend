@@ -88,5 +88,3 @@ If you have any questions or suggestions, feel free to reach out:
 
 - Email: [tejaschigateri15@gmail.com]
 - Twitter: [@Tejas06902065]
-```
-
