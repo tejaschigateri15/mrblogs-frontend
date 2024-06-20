@@ -46,11 +46,10 @@ export default function Signin() {
 
   const handlesubmit = async (e) => {
     e.preventDefault();
-    console.log(formData);
+    // console.log(formData);
     try {
       const response = await axios.post(`${base_url}/login`, formData)
-      // setid(response.data)
-      // console.log("fdfdfdxxxx : ", response.data)
+    
       const { info, accessToken, refreshToken } = response.data
       const { username, id, email, profile_pic } = info
       Cookies.set('accessToken', accessToken, {
@@ -64,7 +63,7 @@ export default function Signin() {
       // Set the refresh token as a cookie
       Cookies.set('refreshToken', refreshToken, {
         expires: 30, // Expires in 30 days
-        // secure: process.env.NODE_ENV === 'production',
+       
         sameSite: 'strict',
       });
       // console.log("vcvc", username, email, id, profile_pic, "\n\naccessToken", accessToken, "\n\nrefreshToken", refreshToken)

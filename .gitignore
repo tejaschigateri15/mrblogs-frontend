@@ -1,3 +1,4 @@
+.env 
 # Logs
 logs
 *.log
@@ -12,7 +13,6 @@ dist
 dist-ssr
 dist-copy
 *.local
-.env 
 
 # Editor directories and files
 .vscode/*

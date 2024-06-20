@@ -48,6 +48,7 @@ export default function Navbar() {
       }
     }
     fetchprofile()
+    // console.log("fs ",asc)
   }, [username])
 
   const handlewrite = () => {
@@ -94,8 +95,8 @@ export default function Navbar() {
       <div className="nav-component">
         <div className="nav-items">
           <div className="icon">
-            <Link to={typeof asc !== 'undefined' ? '/writeblog' : ''} onClick={handlewrite}><div className="writeicon"><FontAwesomeIcon icon={faPen} /></div></Link>
-            <Link to={typeof asc !== 'undefined' ? '/writeblog' : ''} onClick={handlewrite}><div className="icon_text"><p>Write</p></div></Link>
+            <Link to={asc  ? '/writeblog' : ''} onClick={handlewrite}><div className="writeicon"><FontAwesomeIcon icon={faPen} /></div></Link>
+            <Link to={asc  ? '/writeblog' : ''} onClick={handlewrite}><div className="icon_text"><p>Write</p></div></Link>
           </div>
 
           <div className="title"><Link to="/"><p>Mr. Blogs</p></Link><img src={image} className="images" /></div>
@@ -107,13 +108,14 @@ export default function Navbar() {
               <Link
                 // to='/profile'
               >
-                {!profilePic ? <FontAwesomeIcon icon={faUser} /> : <img ref={imageref} src={profilePic} alt="profilepic" className="roundedProfilePic" onClick={()=>{setOpen(!open)}} />   }
+                {!profilePic && typeof asc == 'undefined' ? <FontAwesomeIcon icon={faUser} /> : asc ? <img ref={imageref} src={profilePic} alt="profilepic" className="roundedProfilePic mr-5" onClick={()=>{setOpen(!open)}} /> : <FontAwesomeIcon icon={faUser} />}
+                {/* {profilePic &&  asc  ? <img ref={imageref} src={profilePic} alt="profilepic" className="roundedProfilePic" onClick={()=>{setOpen(!open)}} /> : <FontAwesomeIcon icon={faUser} />  } */}
               </Link>
           
             </div>
 
 
-            <Link to='/login' className="loginp"><p className="logx">Login?</p></Link>
+           { !asc ?  <Link to='/login' className="loginp"><p className="logx">Login?</p></Link> : ''}
           </div>
 
         </div>
