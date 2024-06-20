@@ -20,7 +20,7 @@ export default function Navbar() {
   const imageref = useRef()
   const menuref = useRef()
   const dispatch = useDispatch()
-  
+
 
   const accessToken = useSelector(state => state.user_info.accessToken);
   const [cv, setcv] = useState(null)
@@ -95,35 +95,32 @@ export default function Navbar() {
       <div className="nav-component">
         <div className="nav-items">
           <div className="icon">
-            <Link to={asc  ? '/writeblog' : ''} onClick={handlewrite}><div className="writeicon"><FontAwesomeIcon icon={faPen} /></div></Link>
-            <Link to={asc  ? '/writeblog' : ''} onClick={handlewrite}><div className="icon_text"><p>Write</p></div></Link>
+            <Link to={asc ? '/writeblog' : ''} onClick={handlewrite}><div className="writeicon"><FontAwesomeIcon icon={faPen} /></div></Link>
+            <Link to={asc ? '/writeblog' : ''} onClick={handlewrite}><div className="icon_text"><p>Write</p></div></Link>
           </div>
 
-          <div className="title"><Link to="/"><p>Mr. Blogs</p></Link><img src={image} className="images" /></div>
+          <div className="title mr-6"><Link to="/"><p>Mr. Blogs</p></Link><img src={image} className="images" /></div>
 
           <div className="log">
 
             <div className={profilePic ? "fff" : "ddd"}>
-         
-              <Link
-                // to='/profile'
-              >
-                {!profilePic && typeof asc == 'undefined' ? <FontAwesomeIcon icon={faUser} /> : asc ? <img ref={imageref} src={profilePic} alt="profilepic" className="roundedProfilePic mr-5" onClick={()=>{setOpen(!open)}} /> : <FontAwesomeIcon icon={faUser} />}
-                {/* {profilePic &&  asc  ? <img ref={imageref} src={profilePic} alt="profilepic" className="roundedProfilePic" onClick={()=>{setOpen(!open)}} /> : <FontAwesomeIcon icon={faUser} />  } */}
+
+              <Link>
+                {!profilePic && typeof asc == 'undefined' ? <FontAwesomeIcon icon={faUser} /> : asc ? <img ref={imageref} src={profilePic} alt="profilepic" className="roundedProfilePic mr-5" onClick={() => { setOpen(!open) }} /> : <FontAwesomeIcon icon={faUser} />}
               </Link>
-          
+
             </div>
 
 
-           { !asc ?  <Link to='/login' className="loginp"><p className="logx">Login?</p></Link> : ''}
+            {!asc ? <Link to='/login' className="loginp"><p className="logx">Login?</p></Link> : ''}
           </div>
 
         </div>
-       { open && <div className="profile-options" ref={menuref} style={{ zIndex: 9999 }}>
-          <ul onClick={(e)=>{handlemenuclick(e)}}>
-            <Link to="/profile" onClick={()=>{setOpen(!open)}} ><li>Profile</li></Link>
-            <Link to="/editprofile" onClick={()=>{setOpen(!open)}} ><li>Edit Profile</li></Link>
-            <Link to="/blogdashboard" onClick={()=>{setOpen(!open)}} ><li>Dashboard</li></Link>
+        {open && <div className="profile-options" ref={menuref} style={{ zIndex: 9999 }}>
+          <ul onClick={(e) => { handlemenuclick(e) }}>
+            <Link to="/profile" onClick={() => { setOpen(!open) }} ><li>Profile</li></Link>
+            <Link to="/editprofile" onClick={() => { setOpen(!open) }} ><li>Edit Profile</li></Link>
+            <Link to="/blogdashboard" onClick={() => { setOpen(!open) }} ><li>Dashboard</li></Link>
             <Link onClick={handlelogout}><li>Logout</li></Link>
 
           </ul>
