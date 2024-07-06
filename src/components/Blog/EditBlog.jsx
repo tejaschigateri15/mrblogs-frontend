@@ -94,9 +94,12 @@ export default function Editblog() {
                 }
                 const res = await axios.post(`${base_url}/api/editblog`, formdata,{
                     params: {
-                        accessToken: accessToken,
+                        // accessToken: accessToken,
                         blog_id: params.id
-                    }
+                    },
+                    headers: {
+                        Authorization: `Bearer ${accessToken}`,
+                      },
                 });
                 // console.log("formdata = ", res.data);
                 <Toaster position="top-center" />

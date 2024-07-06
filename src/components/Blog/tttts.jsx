@@ -13,6 +13,9 @@ import axios from "axios";
 import { set_user_info } from "../state";
 
 export default function Navbar() {
+
+  const base_url = import.meta.env.VITE_URL || 'http://localhost:8080';
+
   const [icon, setIcon] = useState(true);
   const asc = Cookies.get('accessToken')
   const [profilePic, setProfilePic] = useState(null);
@@ -42,7 +45,7 @@ export default function Navbar() {
 
     async function fetchprofile() {
       if (username.length > 0) {
-        const profilePix = await axios.get(`https://testingfinal.onrender.com/getprofilepic/${username}`)
+        const profilePix = await axios.get(`${base_url}/getprofilepic/${username}`)
         setProfilePic(profilePix.data)
         // console.log(profilePic)
       }

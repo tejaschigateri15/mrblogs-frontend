@@ -76,14 +76,11 @@ export default function ProfileDashboard() {
         // return;
       }
       try {
-        const response = await axios.get(`${base_url}/api/getprofile/${username}`,
-          {
-            params: {
-              username: username,
-              accessToken: asc
-            }
-          }
-        );
+        const response = await axios.get(`${base_url}/api/getprofile/${username}`, {
+          headers: {
+            Authorization: `Bearer ${accessToken}`,
+          },
+        });
         // console.log("data  : ", response.data)
         if (response.status === 401) {
           toast.error('Please Login again');

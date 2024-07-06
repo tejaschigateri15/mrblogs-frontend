@@ -67,9 +67,9 @@ export default function Createblog() {
                     return;
                 }
                 const res = await axios.post(`${base_url}/api/createblog`, formdata,{
-                    params: {
-                        accessToken: accessToken
-                    }
+                    headers: {
+                        Authorization: `Bearer ${accessToken}`,
+                      },
                 });
                 // console.log("formdata = ", res.data);
                 <Toaster position="top-center" />
