@@ -1,5 +1,5 @@
 
-```markdown
+
 # Project Name
 
 A brief description of your Vite React project.
@@ -45,7 +45,7 @@ npm run dev
 
 # Using Yarn
 yarn dev
-```
+
 
 The application will be available at `http://localhost:5173` (or the next available port if 5173 is already in use).
 
