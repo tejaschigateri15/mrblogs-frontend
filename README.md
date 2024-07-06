@@ -1,4 +1,3 @@
-Sure, here's a README file template for a Vite React project:
 
 ```markdown
 # Project Name
@@ -16,25 +15,25 @@ Before you begin, ensure you have the following installed:
 
 1. Clone the repository:
 
-```bash
-git clone https://github.com/your-username/your-project.git
-```
+    ```bash
+    git clone https://github.com/your-username/your-project.git
+    ```
 
 2. Navigate to the project directory:
 
-```bash
-cd your-project
-```
+    ```bash
+    cd your-project
+    ```
 
 3. Install the dependencies:
 
-```bash
-# Using npm
-npm install
+    ```bash
+    # Using npm
+    npm install
 
-# Using Yarn
-yarn
-```
+    # Using Yarn
+    yarn
+    ```
 
 ## Development
 
@@ -68,6 +67,10 @@ The optimized and minified production bundle will be generated in the `dist` fol
 
 You can deploy the `dist` folder to any static hosting service like [Netlify](https://www.netlify.com/), [Vercel](https://vercel.com/), or [GitHub Pages](https://pages.github.com/).
 
+## Backend Repository
+
+Find the backend repository at [mrblogs-backend](https://github.com/tejaschigateri15/mrblogs-backend).
+
 ## Technologies Used
 
 - [React](https://reactjs.org/)
@@ -84,7 +87,10 @@ If you'd like to contribute to this project, please follow these steps:
 4. Push to the branch: `git push origin feature/your-feature-name`
 5. Create a new Pull Request.
 
+## Contact
+
 If you have any questions or suggestions, feel free to reach out:
 
-- Email: [tejaschigateri15@gmail.com]
-- Twitter: [@Tejas06902065]
+- Email: [tejaschigateri15@gmail.com](mailto:tejaschigateri15@gmail.com)
+- Twitter: [@Tejas06902065](https://twitter.com/Tejas06902065)
+```
