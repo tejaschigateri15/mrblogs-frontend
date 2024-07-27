@@ -5,13 +5,27 @@ import { useState } from 'react';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
 import * as Emailvalid from 'email-validator'
+import { createTheme, IconButton, InputAdornment, ThemeProvider } from '@mui/material';
+import { EmailOutlined, LockOutlined, Person2Outlined, VerifiedUserOutlined, Visibility, VisibilityOff } from '@mui/icons-material';
 
 
 export default function Signup() {
 
   const base_url = import.meta.env.VITE_URL || 'http://localhost:8080';
-  
-  const url =`${base_url}/register`
+
+  const [showPassword, setShowPassword] = useState(false);
+
+  const theme = createTheme({
+    palette: {
+      primary: {
+        main: 'rgb(100, 108, 255)',
+      },
+    },
+  });
+
+  const [error, setError] = useState('');
+
+  const url = `${base_url}/register`
   // console.log("url",url);
   const [formData, setFormData] = useState({
     username: '',
@@ -22,58 +36,130 @@ export default function Signup() {
   const navigate = useNavigate();
   const handleInputChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
+    setError('');
     // console.log(formData);
   };
 
   const handlesubmit = async (e) => {
     e.preventDefault();
-    // console.log(formData);
+    console.log("Signup details",formData);
     try {
       const form = await axios.post(url, formData);
-      navigate('/login')
+      if (form.status === 200){
 
+        navigate('/login')
+      }
+      else{
+        setError('Username or Email already exists');
+      }
     }
     catch (err) {
       console.log(err);
+      setError('Something went wrong');
     }
-   
+
   };
 
-  const isError = formData.password.length < 10;
+  // const isError = formData.password.length < 10;
   return (
-    <div>
-      <div className="sign-up flex flex-row">
-        <div className="content basis-1/2">
-          <h2 className='ll text-center'>Dive into the Blogosphere with Us!</h2>
-          <div className="form">
-            <div className="contentt">
-              <div className="inputsx">
-                <TextField
-                  id="firstname"
-                  label="Username"
-                  variant="standard"
-                  name='username'
-                  InputLabelProps={{ style: { color: '#546e7a' } }}
-                  onChange={handleInputChange}
-                />
-                <TextField id="email" label="Email" variant="standard" InputLabelProps={{ style: { color: '#546e7a' } }} name='email' onChange={handleInputChange} />
-                <TextField id="password" label="Password" variant="standard" type="password" InputLabelProps={{ style: { color: '#546e7a' } }}
+    <ThemeProvider theme={theme}>
+      <div className="login-container">
+        <div className="login-content">
+          {/* <div className="branding">
+            <div className="logo">Mr. Blogs</div>
+          </div> */}
+          <div className="login-header">
+            <h1>Create Your Account</h1>
+            <p>Join Mr. Blogs today and start your journey with us.</p>
+          </div>
 
-                  onChange={handleInputChange}
-                  error={isError}
-                  helperText={isError ? 'Password must be at least 8 characters long' : ''}
-                  name='password'
-                />
-                <Button variant="outlined" onClick={handlesubmit}>sign up</Button>
-                <p className='log-in'>Already have an account? <Link to='/login'> login</Link></p>
-              </div>
-            </div>
+          <form onSubmit={handlesubmit} className="login-form">
+            {/* for username */}
+            <TextField
+              fullWidth
+              variant="outlined"
+              label="Username"
+              name="username"
+              value={formData.username}
+              onChange={handleInputChange}
+              InputProps={{
+                startAdornment: (
+                  <InputAdornment position="start">
+                    <Person2Outlined />
+                  </InputAdornment>
+                ),
+              }} />
+
+
+            <TextField
+              fullWidth
+              variant="outlined"
+              label="Email"
+              name="email"
+              value={formData.email}
+              onChange={handleInputChange}
+              InputProps={{
+                startAdornment: (
+                  <InputAdornment position="start">
+                    <EmailOutlined />
+                  </InputAdornment>
+                ),
+              }}
+            />
+            <TextField
+              fullWidth
+              variant="outlined"
+              label="Password"
+              name="password"
+              type={showPassword ? 'text' : 'password'}
+              value={formData.password}
+              onChange={handleInputChange}
+              InputProps={{
+                startAdornment: (
+                  <InputAdornment position="start">
+                    <LockOutlined />
+                  </InputAdornment>
+                ),
+                endAdornment: (
+                  <InputAdornment position="end">
+                    <IconButton
+                      onClick={() => setShowPassword(!showPassword)}
+                      edge="end"
+                    >
+                      {showPassword ? <VisibilityOff /> : <Visibility />}
+                    </IconButton>
+                  </InputAdornment>
+                ),
+              }}
+            />
+            {error && <p className="error-message">{error}</p>}
+            <Button
+              variant="contained"
+              fullWidth
+              type="submit"
+              className="login-button"
+            >
+              Sign Up
+            </Button>
+          </form>
+          <div className="login-options">
+            {/* <Link to="/forgot-password" className="forgot-password">
+              Forgot Password?
+            </Link> */}
+            <p className="signup-prompt">
+              {/* Don't have an account? <Link to="/signup">Sign Up</Link> */}
+              Already have an account? <Link to="/login">Log In</Link>
+            </p>
           </div>
         </div>
-        <div className="sideimage basis-1/2">
-          <img src="login-image.jpg" alt="hello" className="h-screen w-full" />
+        <div className="login-image">
+          {/* <img src="pxfuel.jpg" alt="Mr. Blogs" /> */}
+          <div className="image-overlay">
+            <h2>Share Your Story on <span>Mr.</span>  Blogs</h2>
+            <p>Join our community of passionate writers and readers</p>
+          </div>
         </div>
       </div>
-    </div>
+    </ThemeProvider>
   );
 }

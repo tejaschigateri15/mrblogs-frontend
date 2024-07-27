@@ -247,6 +247,7 @@ export default function Currentblog() {
       
         if (res.data) {
           toast.success('Blog saved successfully');
+          setIsSaved(true);
 
         }
 

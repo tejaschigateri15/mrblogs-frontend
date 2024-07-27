@@ -10,6 +10,7 @@ import axios from 'axios';
 import { useSelector } from 'react-redux';
 import { Toaster, toast } from 'sonner';
 import MainblogLoader from '../user-credientials/MainblogLoader';
+import PrivateToggleDialog from './PrivateToggleDialog';
 
 export default function BlogDashboard() {
 
@@ -20,6 +21,10 @@ export default function BlogDashboard() {
   const [commentedBlog, setCommentedBlog] = useState({});
   const username = useSelector(state => state.user_info.username);
   const [isLoading, setIsLoading] = useState(true);
+  const [isDialogOpen, setIsDialogOpen] = useState(false);
+  const [selectedBlog, setSelectedBlog] = useState(null);
+  const [hoveredBlogId, setHoveredBlogId] = useState(null);
+
 
 
   async function confirmdeletex(id) {
@@ -58,40 +63,30 @@ export default function BlogDashboard() {
     });
   }
 
-  async function confirmPrivate(id) {
-    try {
-      const res = await axios.get(`${base_url}/api/togglePrivate/${id}`);
-      if (res.data === true) {
-        toast.success('Blog Made Private Successfully', { duration: 2000 });
-        setTimeout(() => { window.location.reload() }, 2000)
-      }
-      else{
-        toast.success('Blog Made Public Successfully', { duration: 2000 });
-        setTimeout(() => { window.location.reload() }, 2000)
-      }
-      // console.log(res);
-    } catch (error) {
-      toast.error('Error Making Blog Private', { duration: 2000 });
-      console.error(error);
-    }
-  }
+  const handleConfirmPrivate = async () => {
+    if (!selectedBlog) return;
 
-  const confirmUpdate = (id,isPrivate) => {
-    confirmAlert({
-      title: !isPrivate ? '⚠️ Are you sure you want to make this blog private?' : '⚠️ Are you sure you want to make this blog public?' ,
-      message: !isPrivate ?  `Private blogs are visible only to you and won't be accessible to the public 🌍` : 'Once public, it will be visible to everyone.' ,
-      buttons: [
-        {
-          label: 'Yes',
-          onClick: () => confirmPrivate(id)
-        },
-        {
-          label: 'No',
-          onClick: null
-        }
-      ]
-    });
-  }
+    try {
+      const res = await axios.get(`${base_url}/api/togglePrivate/${selectedBlog.id}`);
+      const newPrivateStatus = res.data;
+      
+      setBlogs(prevBlogs => prevBlogs.map(blog => 
+        blog._id === selectedBlog.id ? { ...blog, isPrivate: newPrivateStatus } : blog
+      ));
+
+      toast.success(`Blog Made ${newPrivateStatus ? 'Private' : 'Public'} Successfully`, { duration: 2000 });
+    } catch (error) {
+      toast.error('Error Updating Blog Privacy', { duration: 2000 });
+      console.error(error);
+    } finally {
+      setIsDialogOpen(false);
+    }
+  };
+
+  const confirmUpdate = (id, isPrivate) => {
+    setSelectedBlog({ id, isPrivate });
+    setIsDialogOpen(true);
+  };
 
   useEffect(() => {
     const getallblogs = async () => {
@@ -219,7 +214,7 @@ export default function BlogDashboard() {
                     <span className="nav__item-text">Delete</span>
                   </div>
                   <div className="nav__item cursor-pointer">
-                    <FontAwesomeIcon icon={faUserSecret} className='nav__item-icon' onClick={()=> confirmUpdate(blog._id,blog.isPrivate)} />
+                    <FontAwesomeIcon icon={faUserSecret} className='nav__item-icon' onClick={() => confirmUpdate(blog._id, blog.isPrivate)} />
                     <span className="nav__item-text">Private</span>
                   </div>
                 </div>
@@ -268,6 +263,14 @@ export default function BlogDashboard() {
         </div>
         }
       </div>
+      <PrivateToggleDialog
+        isOpen={isDialogOpen}
+        onClose={() => setIsDialogOpen(false)}
+        onConfirm={handleConfirmPrivate}
+        isPrivate={selectedBlog?.isPrivate}
+      />
+    {/* </div> */}
     </div>
+    
   );
 }

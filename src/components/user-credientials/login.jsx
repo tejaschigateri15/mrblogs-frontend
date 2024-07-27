@@ -1,137 +1,143 @@
-// import React from 'react';
-
-import TextField from '@mui/material/TextField';
-import Button from '@mui/material/Button';
-import { Link } from 'react-router-dom';
-import { useState } from 'react';
+import React, { useState } from 'react';
+import { TextField, Button, IconButton, InputAdornment, ThemeProvider, createTheme } from '@mui/material';
+import { Link, useNavigate } from 'react-router-dom';
+import { useDispatch } from 'react-redux';
 import axios from 'axios';
-import { useNavigate } from 'react-router-dom';
-import { useSelector, useDispatch } from 'react-redux';
+import Cookies from 'js-cookie';
 import { set_user_info } from "../state";
-import '../css/login.css'
-import { GoogleAuthProvider, signInWithPopup } from 'firebase/auth';
-import { auth } from '../../firebase';
-import Cookies from 'js-cookie'
+import { Visibility, VisibilityOff, LockOutlined, EmailOutlined } from '@mui/icons-material';
+import '../css/login.css';
 
-
-// import { set } from 'mongoose';
-
+const theme = createTheme({
+  palette: {
+    primary: {
+      main: 'rgb(100, 108, 255)',
+    },
+  },
+});
 
 export default function Signin() {
-
   const base_url = import.meta.env.VITE_URL || 'http://localhost:8080';
-
-  const dispatch = useDispatch()
-  const user_info = useSelector((state) => state.username)
-
-  // const [blog_id,setblog_id] = useContext(mycontext)
+  const dispatch = useDispatch();
+  const navigate = useNavigate();
 
   const [formData, setFormData] = useState({
-
     email: '',
     password: '',
   });
-  const asc = Cookies.get('accessToken')
-  // console.log("sf", asc)
+  const [showPassword, setShowPassword] = useState(false);
+  const [error, setError] = useState('');
 
-
-  const [yes, setYes] = useState(false);
-  const [idd, setid] = useState([])
-
-  const navigate = useNavigate();
   const handleInputChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
-    console.log(formData);
+    setError('');
   };
 
-  const handlesubmit = async (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    // console.log(formData);
     try {
-      const response = await axios.post(`${base_url}/login`, formData)
-    
-      const { info, accessToken, refreshToken } = response.data
-      const { username, id, email, profile_pic } = info
+      const response = await axios.post(`${base_url}/login`, formData);
+      const { info, accessToken, refreshToken } = response.data;
+      const { username, id, profile_pic } = info;
+
       Cookies.set('accessToken', accessToken, {
-        expires: 7, // Expires in 7 days
-        // secure: process.env.NODE_ENV === 'production', // Set to true if you're using HTTPS
+        expires: 7,
         sameSite: 'strict',
         secure: true,
-        // httpOnly: true,
       });
 
-      // Set the refresh token as a cookie
       Cookies.set('refreshToken', refreshToken, {
-        expires: 30, // Expires in 30 days
-       
+        expires: 30,
         sameSite: 'strict',
       });
-      // console.log("vcvc", username, email, id, profile_pic, "\n\naccessToken", accessToken, "\n\nrefreshToken", refreshToken)
-      dispatch(set_user_info({ username, id, profile_pic, accessToken, refreshToken })) // saving the info to the redux store
-      if (response.status === 200) {
-        const asc = Cookies.get('accessToken')
-        // console.log("accessTokenxxxxxxxxx", asc)
-        navigate('/');
 
-      } else {
-        setYes(true);
-      }
-
-      // console.log("login was correct", response.status);
+      dispatch(set_user_info({ username, id, profile_pic, accessToken, refreshToken }));
+      navigate('/');
     } catch (err) {
-      console.log(err);
-      setYes(true);
+      setError('Incorrect email or password');
     }
   };
 
-  const googleauth = async () => {
-
-    try {
-      console.log("google auth")
-      const provider = new GoogleAuthProvider();
-      const { user } = await signInWithPopup(auth, provider)
-      console.log(user)
-      navigate('/')
-
-    } catch (err) {
-      console.log(err)
-    }
-
-  }
-
-
-  // const isError = formData.password.length < 10;
   return (
-    <div>
-      <div className="sign-up flex flex-row">
-        <div className="content basis-1/2">
-          <h2 className='ll text-center'>Dive into the Blogosphere with Us!</h2>
-          <div className="form">
-            <div className="contentt">
-              <div className="inputsx">
-
-                <TextField id="email" label="Email" variant="standard" InputLabelProps={{ style: { color: '#546e7a' } }} name='email' onChange={handleInputChange} />
-                <TextField id="password" label="Password" variant="standard" type="password" InputLabelProps={{ style: { color: '#546e7a' } }}
-
-                  onChange={handleInputChange}
-                  error={yes}
-                  helperText={yes ? 'Incorrect email or password' : ''}
-                  name='password'
-                />
-                <Button variant="outlined" onClick={handlesubmit} className='login_btn'>Login</Button>
-                {/* <Button className="Button" onClick={googleauth}>
-                  <img width="48" height="48" src="https://img.icons8.com/color/48/google-logo.png" alt="google-logo" />
-                  <span>Login as Google</span>
-                </Button> */}
-                <p className='log-in'>don't have an account? <Link to='/signup'><span className='singnup-btn mobile-signup'>Signup</span> </Link></p>
-              </div>
-            </div>
+    <ThemeProvider theme={theme}>
+      <div className="login-container">
+        <div className="login-content">
+          {/* <div className="branding">
+            <div className="logo">Mr. Blogs</div>
+          </div> */}
+          <div className="login-header">
+            <h1>Welcome Back!</h1>
+            <p>Log in to continue your journey with Mr. Blogs</p>
+          </div>
+          <form onSubmit={handleSubmit} className="login-form">
+            <TextField
+              fullWidth
+              variant="outlined"
+              label="Email"
+              name="email"
+              value={formData.email}
+              onChange={handleInputChange}
+              InputProps={{
+                startAdornment: (
+                  <InputAdornment position="start">
+                    <EmailOutlined />
+                  </InputAdornment>
+                ),
+              }}
+            />
+            <TextField
+              fullWidth
+              variant="outlined"
+              label="Password"
+              name="password"
+              type={showPassword ? 'text' : 'password'}
+              value={formData.password}
+              onChange={handleInputChange}
+              InputProps={{
+                startAdornment: (
+                  <InputAdornment position="start">
+                    <LockOutlined />
+                  </InputAdornment>
+                ),
+                endAdornment: (
+                  <InputAdornment position="end">
+                    <IconButton
+                      onClick={() => setShowPassword(!showPassword)}
+                      edge="end"
+                    >
+                      {showPassword ? <VisibilityOff /> : <Visibility />}
+                    </IconButton>
+                  </InputAdornment>
+                ),
+              }}
+            />
+            {error && <p className="error-message">{error}</p>}
+            <Button
+              variant="contained"
+              fullWidth
+              type="submit"
+              className="login-button"
+            >
+              Log In
+            </Button>
+          </form>
+          <div className="login-options">
+            <Link to="/forgot-password" className="forgot-password">
+              Forgot Password?
+            </Link>
+            <p className="signup-prompt">
+              Don't have an account? <Link to="/signup">Sign Up</Link>
+            </p>
           </div>
         </div>
-        <div className="sideimage basis-1/2">
-          <img src="login-image.jpg" alt="hello" className="h-screen w-full" />
+        <div className="login-image">
+          {/* <img src="pxfuel.jpg" alt="Mr. Blogs" /> */}
+          <div className="image-overlay">
+            <h2>Share Your Story on <span>Mr.</span>  Blogs</h2>
+            <p>Join our community of passionate writers and readers</p>
+          </div>
         </div>
       </div>
-    </div>
+    </ThemeProvider>
   );
 }

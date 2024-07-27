@@ -46,7 +46,7 @@ export default function Mainpage() {
                 // console.log("dfg",import.meta.env.VITE_URL);
                 
                 const allBlogsResponse = await axios.get(`${base_url}/api/getblog`);
-                // console.log("all blogs ", allBlogsResponse.data);
+                console.log("all blogs ", allBlogsResponse.data);
                 setBlogs(allBlogsResponse.data);
                 if (allBlogsResponse.data.length > 0) {
                     setIsLoading(false);
@@ -58,7 +58,7 @@ export default function Mainpage() {
                     if (recentlySavedResponse.data.message === "No saved blogs") {
                         // console.log("No saved blogs found");
                     } else {
-                        // console.log("Recently saved blogs: ", recentlySavedResponse.data);
+                        console.log("Recently saved blogs: ", recentlySavedResponse.data);
                         setRecentlySaved(recentlySavedResponse.data.recently_savedblog);
                         const { blog_id, profile_pic } = recentlySavedResponse.data;
                         
@@ -255,7 +255,7 @@ export default function Mainpage() {
                             </div>
                             <div className="recently-saved mt-7">
                                 <h2 className='font-bold mb-4'>Recently Saved</h2>
-                                {username ? issavedblog ? recentlysaved.map((saved) => (
+                                {username ? issavedblog ?  recentlysaved.map((saved) => (
                                     <div className="top-picksimg mb-5" key={saved._id}>
                                         <div className="top-headd flex items-center gap-3">
                                             <img src={saved.author_img || "pxfuel.jpg"} alt="" />

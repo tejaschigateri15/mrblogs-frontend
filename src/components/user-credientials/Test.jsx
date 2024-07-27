@@ -1,6 +1,6 @@
 // import toast from 'react-hot-toast';
 import { Button, TextField } from '@mui/material';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import axios from 'axios';
 import '../css/editprofile.css'
 import { SocialIcon } from 'react-social-icons'
@@ -27,7 +27,27 @@ export default function Twstest() {
   const [isUploading, setIsUploading] = useState(false);
   const navigate = useNavigate();
 
-  const dispatch = useDispatch()
+  const dispatch = useDispatch();
+
+  // /api/getprofile/:username to get the previous data of the user
+  useEffect(() => {
+    const getProfile = async () => {
+      try {
+        const res = await axios.get(`${base_url}/api/getprofile/${username}`);
+        console.log("Response:", res.data);
+        setFetchedName(res.data.name);
+        setFetchedphoneno(res.data.phoneno);
+        setFetchedBio(res.data.bio);
+        setFetchedInsta(res.data.instagram);
+        setFetchedLinkedin(res.data.linkedin);
+        setImage(res.data.profile_pic);
+        // console.log("Image:", res.data.image);
+      } catch (err) {
+        console.error("Error:", err);
+      }
+    }
+    getProfile();
+  }, [username]);
 
 
   const handleSubmit = async (e) => {
@@ -129,7 +149,8 @@ export default function Twstest() {
           /> 
           </div> */}
           <div className="imagebox">
-            {image ? <img src={image} alt="" /> : !isUploading ? <div className='imagetextx'><p>Image not selected</p></div> : <div className="spinner"> <CircularProgress style={{ color: '#7856FF' }} /></div>}
+            {/* {image ? <img src={image} alt="" /> : !isUploading ? <div className='imagetextx'><p>Image not selected</p></div> : <div className="spinner"> <CircularProgress style={{ color: '#7856FF' }} /></div>} */}
+            {isUploading ? <div className="spinner"> <CircularProgress style={{ color: '#7856FF' }} /></div> : image ? <img src={image} alt="" /> : <div className='imagetextx'><p>Image not selected</p></div>}
           </div>
 
           <form action="" encType="multipart/form-data" >
@@ -154,18 +175,19 @@ export default function Twstest() {
           <div className="detailswrap">
             <div className="mainhead"><h2>Edit Profile    <FontAwesomeIcon icon={faEdit} /></h2></div>
             <div className="inputsy">
-              <div className="editname"><TextField id='name' label={!username || "Name"} variant="standard" onChange={(e) => setFetchedName(e.target.value)} /></div>
-              <div className="editemail"><TextField id='name' label="Mobile" variant="standard" onChange={(e) => setFetchedphoneno(e.target.value)} /></div>
+              <div className="editname"><TextField id='name' label={!username || "Name"} variant="standard" value={fetchedName} onChange={(e) => setFetchedName(e.target.value)} /></div>
+              <div className="editemail"><TextField id='name' label="Mobile" variant="standard" value={fetchedphoneno} onChange={(e) => setFetchedphoneno(e.target.value)} /></div>
               <div className="inslink"> <TextField
                 multiline
                 rows={8}
                 variant="outlined"
                 label="Bio"
+                value={fetchedBio}
                 onChange={(e) => setFetchedBio(e.target.value)}
               /></div>
               <div className="medialinks">
-                <div className="linkbox"><div className="iconsocial"><SocialIcon url="https://instagram.com" style={{ width: '35px', height: '40px' }} /></div><TextField id='name' label="Instagram" variant="outlined" onChange={(e) => setFetchedInsta(e.target.value)} /></div>
-                <div className="linkbox"><div className="iconsocial"><SocialIcon url="https://linkedin.com" style={{ width: '35px', height: '40px' }} /></div><TextField id='name' label="Linkedin" variant="outlined" onChange={(e) => setFetchedLinkedin(e.target.value)} /></div>
+                <div className="linkbox"><div className="iconsocial"><SocialIcon url="https://instagram.com" style={{ width: '35px', height: '40px' }} /></div><TextField id='name' label="Instagram" variant="outlined" value={fetchedInsta} onChange={(e) => setFetchedInsta(e.target.value)} /></div>
+                <div className="linkbox"><div className="iconsocial"><SocialIcon url="https://linkedin.com" style={{ width: '35px', height: '40px' }} /></div><TextField id='name' label="Linkedin" variant="outlined" value={fetchedLinkedin} onChange={(e) => setFetchedLinkedin(e.target.value)} /></div>
               </div>
             </div>
           </div>

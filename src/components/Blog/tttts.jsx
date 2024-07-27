@@ -42,17 +42,17 @@ export default function Navbar() {
   }
 
   useEffect(() => {
-
-    async function fetchprofile() {
-      if (username.length > 0) {
-        const profilePix = await axios.get(`${base_url}/getprofilepic/${username}`)
-        setProfilePic(profilePix.data)
-        // console.log(profilePic)
+  
+      async function fetchprofile() {
+        if (username.length > 0) {
+          const profilePix = await axios.get(`${base_url}/getprofilepic/${username}`)
+          setProfilePic(profilePix.data)
+          // console.log(profilePic)
+        }
       }
-    }
-    fetchprofile()
-    // console.log("fs ",asc)
-  }, [username])
+      fetchprofile()
+      // console.log("fs ",asc)
+    }, [username, base_url])
 
   const handlewrite = () => {
     if (!asc) {
