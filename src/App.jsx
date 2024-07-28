@@ -16,6 +16,7 @@ import SavedBlogsxx from './components/Blog/SavedBlogs.jsx';
 import ShowComments from './components/Blog/ShowComments.jsx';
 import Editblog from './components/Blog/EditBlog.jsx';
 import UseProfile from './components/Blog/UserProfile.jsx';
+import ErrorPage from './Error.jsx';
 
 
 
@@ -43,6 +44,7 @@ function App() {
           </Route>
           <Route path="login" element={<Signin />} />
           <Route path="signup" element={<Signup />} />
+          <Route path="*" element={<ErrorPage />} />
           {/* <Route path="home" element={<Navbar/>}/> */}
           {/* <Route path="testing" element={<XApp/>}/> */}
         </Routes>

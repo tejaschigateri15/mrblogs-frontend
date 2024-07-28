@@ -1,0 +1,97 @@
+@font-face {
+    font-family: 'pixel_en';
+    src: url('Font_en.ttf') format('truetype');
+  }
+  
+  @font-face {
+    font-family: 'pixel_fa';
+    src: url('Font_fa.ttf') format('truetype');
+  }
+  
+  .error-page {
+    height: 100vh;
+    font-size: 16px;
+    font-family: "pixel_en", "pixel_fa", "Consolas", "math", sans-serif;
+    background: #000;
+    color: #fff;
+    overflow: hidden !important;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+  }
+  
+  .text_404 {
+    display: flex;
+    text-align: center;
+    align-items: center;
+    margin: 15px 0;
+  }
+  
+  .text_404 h1 {
+    margin: 0 10px;
+    font-size: 7em;
+  }
+  
+  .pixelated-image {
+    width: 1.6em;
+  }
+  
+  .description {
+    letter-spacing: 3px;
+    margin: 15px 0;
+    font-size: 1rem;
+  }
+  
+  .back-link {
+    letter-spacing: 2px;
+    text-align: center;
+    margin: 15px 0;
+    font-size: 0.8rem;
+    text-decoration: none;
+    color: #fff;
+  }
+  
+  @media (min-width: 1024px) {
+    .text_404 h1 {
+      font-size: 10vw;
+    }
+    
+    .description {
+      font-size: 1.5vw;
+    }
+    
+    .back-link {
+      font-size: 1vw;
+    }
+  }
+  
+  @media (max-width: 768px) {
+    .text_404 h1 {
+      margin: 0 3px;
+      font-size: 5em;
+    }
+    
+    .description {
+      font-size: 0.6em;
+    }
+    
+    .back-link {
+      font-size: 0.6em;
+    }
+  }
+  
+  @media (max-width: 300px) {
+    .text_404 h1 {
+      margin: 0;
+      font-size: 4em;
+    }
+    
+    .description {
+      font-size: 0.5em;
+    }
+    
+    .back-link {
+      font-size: 0.5em;
+    }
+  }

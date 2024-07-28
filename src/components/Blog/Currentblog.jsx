@@ -116,6 +116,7 @@ export default function Currentblog() {
     const fetchblog = async () => {
       try {
         const res = await axios.get(`${base_url}/api/getblog/${paramss.id}`);
+        console.log(res.data);
         const { author, author_img, body, date, title, blog_image, category, tags } = res.data;
         setBlog({ author, author_img, body, date, title, blog_image, category, tags });
         setDate(date.slice(0, 10));
@@ -132,10 +133,8 @@ export default function Currentblog() {
 
         setBlogbody(processedBody);
 
-        const response = await axios.get(`https://testingfinal.onrender.com/api/getcomment/${paramss.id}`);
-        setAllcomments(response.data);
+        setAllcomments(res.data.comments);
 
-        // Calculate and set the estimated reading time
         const readingTime = calculatereadtime(body);
         setReadTime(readingTime);
       } catch (err) {
