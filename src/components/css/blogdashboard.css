@@ -42,6 +42,9 @@
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
 }
+  .blogs{
+    max-height: 280px;
+  }
 
   .blogs-header {
     display: flex;
@@ -80,11 +83,14 @@
     border-radius: 15px;
   }
 
+  .blogbodyyy{
+    max-height: 340px;
+  }
 
   .blogmanageoptions{
     display: flex;
     flex-direction: column;
-    margin-top: 30px;
+    margin-top: 5px;
     margin-left: 40px;
     margin-right: 20px;
     margin-bottom: 75px;

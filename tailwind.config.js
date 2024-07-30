@@ -14,6 +14,9 @@ export default {
         'blueGrey5': '#855F80',
         'blueGrey6': '#834D6A',
       },
+      maxWidth: {
+        '80p': '80%',
+      }
     },
   },
   plugins: [],

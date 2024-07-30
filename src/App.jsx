@@ -17,6 +17,9 @@ import ShowComments from './components/Blog/ShowComments.jsx';
 import Editblog from './components/Blog/EditBlog.jsx';
 import UseProfile from './components/Blog/UserProfile.jsx';
 import ErrorPage from './Error.jsx';
+import NewBlog from './components/Blog/NewBlog.jsx';
+import ForgotPassword from './components/user-credientials/ForgotPassword.jsx';
+import ResetPassword from './components/user-credientials/ResetPassword.jsx';
 
 
 
@@ -41,9 +44,13 @@ function App() {
             <Route path="blog/:id" element={<Currentblog />} />
             <Route path="topic/:tag" element={<Blogtopics />} />
             <Route path="all/savedblogs" element={<SavedBlogPage />} />
+            <Route path="newblog" element={<NewBlog />} />
+
           </Route>
           <Route path="login" element={<Signin />} />
           <Route path="signup" element={<Signup />} />
+          <Route path="forgotpassword" element={<ForgotPassword />} />
+          <Route path="reset-password" element={<ResetPassword />} />
           <Route path="*" element={<ErrorPage />} />
           {/* <Route path="home" element={<Navbar/>}/> */}
           {/* <Route path="testing" element={<XApp/>}/> */}

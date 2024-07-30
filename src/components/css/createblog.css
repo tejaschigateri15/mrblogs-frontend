@@ -250,3 +250,112 @@
       opacity: 1;
     }
   }
+
+  @media screen and (max-width: 768px) {
+    .write-blog {
+      margin-bottom: 100px;
+    }
+
+    .blogedit {
+      margin: 40px 20px;
+      padding-left: 0;
+      max-width: 100%;
+    }
+
+    .quote {
+        display: none;
+      font-size: 24px;
+      margin-left: 20px;
+      margin-top: 40px;
+      text-align: center;
+    }
+
+    .authorprofile {
+      margin-top: 30px;
+      max-width: 70%;
+      margin-left: 55px;
+    }
+
+    .authorname {
+      width: 90%;
+      margin: 0 auto;
+    }
+
+    .authorname p {
+      font-size: 16px;
+      padding: 8px;
+    }
+
+    .authorimage img {
+      width: 35px;
+      height: 35px;
+    }
+
+    .uploadblogimg {
+      margin-left: 0;
+      margin-bottom: 20px;
+      flex-direction: column;
+      align-items: center;
+    }
+
+    .uploadericon {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+
+    .blog-title {
+      width: 100%;
+    }
+
+    .blogbodye {
+      gap: 30px;
+    }
+
+    .ql-editor {
+      height: 200px;
+      font-size: 14px;
+    }
+
+    .categoriess {
+      flex-direction: column;
+      gap: 15px;
+    }
+
+    .tags {
+      width: 100%;
+    }
+
+    .select {
+      width: 100%;
+      margin-right: 0;
+    }
+
+    .submit {
+      margin-top: 40px;
+    }
+
+    .submit button {
+      width: 80%;
+      font-size: 14px;
+    }
+
+    .rightoptions {
+      position: static;
+      margin: 40px 20px;
+    }
+
+    .profilesettingname {
+      font-size: 15px;
+    }
+
+    .image-prev {
+      width: 100%;
+      height: 200px;
+    }
+
+    .imagetext p {
+      font-size: 12px;
+      margin-top: 80px;
+    }
+  }

@@ -13,6 +13,8 @@ import Cookies from 'js-cookie';
 import MainblogLoader from '../user-credientials/MainblogLoader';
 import { useDispatch } from 'react-redux';
 import { set_user_info } from '../state';
+import { List, Cpu, Briefcase, Stethoscope, MoreHorizontal, Lightbulb } from 'lucide-react';
+
 
 // import process from 'process';
 
@@ -20,6 +22,11 @@ import { set_user_info } from '../state';
 
 export default function Mainpage() {
     const containerRef = useRef(null);
+    const [showLeftArrow, setShowLeftArrow] = useState(false);
+    const [showRightArrow, setShowRightArrow] = useState(false);
+    const [isScrolling, setIsScrolling] = useState(false);
+    const [isMobile, setIsMobile] = useState(false);
+
     const username = useSelector(state => state.user_info.username);
     const [blogs, setBlogs] = useState([]);
     const [activeButton, setActiveButton] = useState(false);
@@ -42,9 +49,9 @@ export default function Mainpage() {
     useEffect(() => {
         const fetchBlogs = async () => {
             try {
-                
+
                 // console.log("dfg",import.meta.env.VITE_URL);
-                
+
                 const allBlogsResponse = await axios.get(`${base_url}/api/getblog`);
                 console.log("all blogs ", allBlogsResponse.data);
                 setBlogs(allBlogsResponse.data);
@@ -61,11 +68,11 @@ export default function Mainpage() {
                         console.log("Recently saved blogs: ", recentlySavedResponse.data);
                         setRecentlySaved(recentlySavedResponse.data.recently_savedblog);
                         const { blog_id, profile_pic } = recentlySavedResponse.data;
-                        
+
                         setSavedBlogId(recentlySavedResponse.data.blog_id);
-                       
+
                         setProfilePic(recentlySavedResponse.data.profile_pic);
-             
+
                         setIsSavedBlog(true);
                     }
                 } else {
@@ -80,6 +87,54 @@ export default function Mainpage() {
         fetchBlogs();
 
     }, [username]);
+
+    useEffect(() => {
+        const checkMobile = () => {
+          setIsMobile(window.innerWidth <= 480);
+        };
+    
+        checkMobile();
+        window.addEventListener('resize', checkMobile);
+    
+        return () => window.removeEventListener('resize', checkMobile);
+      }, []);
+    
+      useEffect(() => {
+        if (!isMobile) return;
+    
+        const container = containerRef.current;
+        let scrollTimer = null;
+    
+        const handleScroll = () => {
+          setIsScrolling(true);
+          clearTimeout(scrollTimer);
+          scrollTimer = setTimeout(() => {
+            setIsScrolling(false);
+            updateArrows();
+          }, 150);
+        };
+    
+        const updateArrows = () => {
+          if (container) {
+            setShowLeftArrow(container.scrollLeft > 0);
+            setShowRightArrow(
+              container.scrollLeft < container.scrollWidth - container.clientWidth - 1
+            );
+          }
+        };
+    
+        if (container) {
+          container.addEventListener('scroll', handleScroll);
+          updateArrows();
+        }
+    
+        return () => {
+          if (container) {
+            container.removeEventListener('scroll', handleScroll);
+          }
+          clearTimeout(scrollTimer);
+        };
+      }, [isMobile]);
 
 
     const handlesave = async (id) => {
@@ -100,7 +155,7 @@ export default function Mainpage() {
         }
     }
 
-   
+
 
 
     const handlecategory = async (category) => {
@@ -144,13 +199,36 @@ export default function Mainpage() {
                 <div className="maincontent mb-12">
                     <div className="contxx">
                         <div className="cont" ref={containerRef}>
-                            <button onClick={fetchallblogs}><Link to='#'> <p className='nav_p'>AllBlogs <img src="list_10819954 (1).svg" alt="" width='22px' className='svgi' /></p> </Link></button>
-                            <button className={activeButton ? 'btn' : ''} onClick={() => handlecategory("Technology")}><Link to='#'> <p className='nav_p'>Technology <img src="innovation_9716538.png" alt="" width='22px' /></p> </Link></button>
-                            <button className='btn' onClick={() => handlecategory("Business")}><Link to='#'> <p className='nav_p'>Business <img src="graph_2065118.png" alt="" width='22px' /></p> </Link></button>
-                            <button className='btn' onClick={() => handlecategory("Science")}><Link to='#'> <p className='nav_p'>Science<img src="flask_2729603.png" alt="" width='22px' /></p> </Link></button>
-                            {/* <button className='btn' onClick={()=>handlecategory("Automobile")} ><Link to='#'> <p>Automobile <img src="sedan_2736918.png" alt="" width='22px'/></p> </Link></button> */}
-                            <button className='btn' onClick={() => handlecategory("Health")}><Link to='#'> <p className='nav_p'>Health <img src="healthcare_6454107.png" alt="" width='22px' /></p> </Link></button>
-                            <button className='btn' onClick={() => handlecategory("Others")}><Link to='#'> <p className='nav_p'>Others <img src="message_739285.png" alt="" width='22px' /></p> </Link></button>
+                            <button onClick={fetchallblogs}>
+                                <Link to='#'>
+                                    <p className='nav_p ml-4'>AllBlogs <List size={22} className='svgi ml-1' /></p>
+                                </Link>
+                            </button>
+                            <button className={activeButton ? 'btn' : ''} onClick={() => handlecategory("Technology")}>
+                                <Link to='#'>
+                                    <p className='nav_p'>Technology <Cpu size={22} className='ml-1' /></p>
+                                </Link>
+                            </button>
+                            <button className='btn' onClick={() => handlecategory("Business")}>
+                                <Link to='#'>
+                                    <p className='nav_p'>Business <Briefcase size={22} className='ml-1' /></p>
+                                </Link>
+                            </button>
+                            <button className='btn' onClick={() => handlecategory("Science")}>
+                                <Link to='#'>
+                                    <p className='nav_p'>Science <Lightbulb size={22} className='ml-1' /></p>
+                                </Link>
+                            </button>
+                            <button className='btn' onClick={() => handlecategory("Health")}>
+                                <Link to='#'>
+                                    <p className='nav_p'>Health <Stethoscope size={22} className='ml-1' /></p>
+                                </Link>
+                            </button>
+                            <button className='btn' onClick={() => handlecategory("Others")}>
+                                <Link to='#'>
+                                    <p className='nav_p'>Others <MoreHorizontal size={22} className='ml-1' /></p>
+                                </Link>
+                            </button>
                         </div>
                         <div className="blogscontent pb-20">
                             {isLoading ? (
@@ -255,7 +333,7 @@ export default function Mainpage() {
                             </div>
                             <div className="recently-saved mt-7">
                                 <h2 className='font-bold mb-4'>Recently Saved</h2>
-                                {username ? issavedblog ?  recentlysaved.map((saved) => (
+                                {username ? issavedblog ? recentlysaved.map((saved) => (
                                     <div className="top-picksimg mb-5" key={saved._id}>
                                         <div className="top-headd flex items-center gap-3">
                                             <img src={saved.author_img || "pxfuel.jpg"} alt="" />

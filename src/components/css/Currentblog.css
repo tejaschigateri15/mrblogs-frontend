@@ -17,6 +17,8 @@
     margin-top: 20px;
 }
 
+
+
 .headers h1{
     font-size: 40px;
     font-weight: 700;
@@ -377,6 +379,12 @@
         font-size: 0;
     }
 
+    .commentbox button{
+        margin-right: 50px;
+        max-height: 60px;
+        
+    }
+
       .cccc > svg {
         font-size: 16px; 
       }
@@ -397,8 +405,6 @@
         width: 300px;
     }
 
-    .comment_title h2{
 
-    }
 
   }

@@ -3,7 +3,7 @@ import { Link, useNavigate } from "react-router-dom";
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faUser, faPen } from '@fortawesome/free-solid-svg-icons';
 import '../css/module.css'
-import '../css/testing.css'
+// import '../css/testing.css'
 import image from '/batman-svgrepo-com.svg'
 import { useSelector, useDispatch } from 'react-redux';
 import { Toaster, toast } from 'sonner'
@@ -129,7 +129,9 @@ export default function Navbar() {
             <ul onClick={handleOutsideClick}>
               <Link to="/profile" onClick={() => setOpen(!open)}><li>Profile</li></Link>
               <Link to="/editprofile" onClick={() => setOpen(!open)}><li>Edit Profile</li></Link>
+              <Link to={asc ? '/writeblog' : ''} onClick={handlewrite}><li>Write Blog</li></Link>
               <Link to="/blogdashboard" onClick={() => setOpen(!open)}><li>Dashboard</li></Link>
+              {/* write blogs with protected route */}
               <Link onClick={handlelogout}><li>Logout</li></Link>
             </ul>
           </div>

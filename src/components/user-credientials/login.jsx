@@ -62,9 +62,6 @@ export default function Signin() {
     <ThemeProvider theme={theme}>
       <div className="login-container">
         <div className="login-content">
-          {/* <div className="branding">
-            <div className="logo">Mr. Blogs</div>
-          </div> */}
           <div className="login-header">
             <h1>Welcome Back!</h1>
             <p>Log in to continue your journey with Mr. Blogs</p>
@@ -122,7 +119,7 @@ export default function Signin() {
             </Button>
           </form>
           <div className="login-options">
-            <Link to="/forgot-password" className="forgot-password">
+            <Link to="/forgotpassword" className="forgot-password">
               Forgot Password?
             </Link>
             <p className="signup-prompt">
@@ -131,7 +128,6 @@ export default function Signin() {
           </div>
         </div>
         <div className="login-image">
-          {/* <img src="pxfuel.jpg" alt="Mr. Blogs" /> */}
           <div className="image-overlay">
             <h2>Share Your Story on <span>Mr.</span>  Blogs</h2>
             <p>Join our community of passionate writers and readers</p>

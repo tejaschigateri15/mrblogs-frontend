@@ -1,135 +1,114 @@
-import React from 'react';
-import { Link } from 'react-router-dom';
-// import '../css/Error.css';
-// import './components/css/ErrorPage.css'
+import React, { useState, useEffect } from 'react';
+import { Button, Typography, Container, Box } from '@mui/material';
+import { useNavigate } from 'react-router-dom';
+import { Home as HomeIcon } from 'lucide-react';
 
 const ErrorPage = () => {
+  const navigate = useNavigate();
+  const [position, setPosition] = useState({ x: 50, y: 50 });
+
+  useEffect(() => {
+    const handleMouseMove = (e) => {
+      setPosition({
+        x: (e.clientX / window.innerWidth) * 100,
+        y: (e.clientY / window.innerHeight) * 100,
+      });
+    };
+
+    window.addEventListener('mousemove', handleMouseMove);
+    return () => window.removeEventListener('mousemove', handleMouseMove);
+  }, []);
+
   return (
-    <main className="error-page">
-      <style>
-        {`
-              @font-face {
-      font-family: 'pixel_en';
-      src: url('Font_en.ttf') format('truetype');
-    }
-    
-    @font-face {
-      font-family: 'pixel_fa';
-      src: url('Font_fa.ttf') format('truetype');
-    }
-    
-    .error-page {
-      height: 100vh;
-      font-size: 16px;
-      font-family: "pixel_en", "pixel_fa", "Consolas", "math", sans-serif;
-      background: #000;
-      color: #fff;
-      overflow: hidden !important;
-      display: flex;
-      flex-direction: column;
-      justify-content: center;
-      align-items: center;
-    }
-    
-    .text_404 {
-      display: flex;
-      text-align: center;
-      align-items: center;
-      margin: 15px 0;
-    }
-    
-    .text_404 h1 {
-      margin: 0 10px;
-      font-size: 7em;
-    }
-    
-    .pixelated-image {
-      width: 1.6em;
-    }
-    
-    .description {
-      letter-spacing: 3px;
-      margin: 15px 0;
-      font-size: 1rem;
-    }
-    
-    .back-link {
-      letter-spacing: 2px;
-      text-align: center;
-      margin: 15px 0;
-      font-size: 0.8rem;
-      text-decoration: none;
-      color: #fff;
-    }
-    
-    @media (min-width: 1024px) {
-      .text_404 h1 {
-        font-size: 10vw;
-      }
+    <Container maxWidth={false} disableGutters sx={{ 
+      height: '100vh', 
+      display: 'flex', 
+      alignItems: 'center', 
+      justifyContent: 'center',
+      background: `radial-gradient(circle at ${position.x}% ${position.y}%, #ffffff, #f0f0f0)`,
+      transition: 'background 0.3s ease',
+      overflow: 'hidden',
+      position: 'relative'
+    }}>
+      {/* Animated background elements */}
+      {[...Array(30)].map((_, i) => (
+        <Box
+          key={i}
+          sx={{
+            position: 'absolute',
+            width: '2px',
+            height: '2px',
+            background: '#000',
+            borderRadius: '50%',
+            opacity: Math.random() * 0.5 + 0.5,
+            animation: `float ${Math.random() * 10 + 10}s linear infinite`,
+            top: `${Math.random() * 100}%`,
+            left: `${Math.random() * 100}%`,
+          }}
+        />
+      ))}
       
-      .description {
-        font-size: 1.5vw;
-      }
-      
-      .back-link {
-        font-size: 1vw;
-      }
-    }
-    
-    @media (max-width: 768px) {
-      .text_404 h1 {
-        margin: 0 3px;
-        font-size: 5em;
-      }
-      
-      .description {
-        font-size: 0.6em;
-      }
-      
-      .back-link {
-        font-size: 0.6em;
-      }
-    }
-    
-    @media (max-width: 300px) {
-      .text_404 h1 {
-        margin: 0;
-        font-size: 4em;
-      }
-      
-      .description {
-        font-size: 0.5em;
-      }
-      
-      .back-link {
-        font-size: 0.5em;
-      }
-    }
+      <Box sx={{ 
+        textAlign: 'center',
+        p: 6,
+        bgcolor: 'rgba(255, 255, 255, 0.8)',
+        borderRadius: 4,
+        backdropFilter: 'blur(10px)',
+        boxShadow: '0 8px 32px rgba(0, 0, 0, 0.1)',
+        maxWidth: '600px',
+        width: '100%',
+        border: '2px solid #000',
+      }}>
+        <Typography variant="h1" sx={{ 
+          fontSize: { xs: '6rem', md: '8rem' }, 
+          fontWeight: 700, 
+          color: '#000',
+          textShadow: '2px 2px 4px rgba(0,0,0,0.1)',
+          mb: 2,
+          fontFamily:"'Exo 2', sans-serif",
+        }}>
+          404
+        </Typography>
+        <Typography variant="h4" sx={{ color: '#000', mb: 4, fontFamily: "'Roboto', sans-serif" }}>
+          Oops! The page you're looking for has wandered off.
+        </Typography>
+        <Typography variant="body1" sx={{ color: '#333', mb: 4, fontFamily: "'Roboto', sans-serif" }}>
+          Don't worry, even the best stories have unexpected twists. Let's get you back on track.
+        </Typography>
+        
+        <Button
+          variant="outlined"
+          color="inherit"
+          size="large"
+          onClick={() => navigate('/')}
+          startIcon={<HomeIcon />}
+          sx={{
+            borderColor: '#000',
+            color: '#000',
+            '&:hover': {
+              borderColor: '#000',
+              bgcolor: 'rgba(0, 0, 0, 0.05)',
+            },
+            fontFamily: "'Roboto', sans-serif",
+            textTransform: 'none',
+            fontSize: '1rem',
+            padding: '10px 20px',
+          }}
+        >
+          Return to Homepage
+        </Button>
+      </Box>
 
-
-          `}
-      </style>
-      <div className="text_404">
-        <h1>4</h1>
-        <h1>
-          <span>
-            <svg className="pixelated-image" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 600">
-              <path
-                fill="#fff"
-                d="M593,53H377.043V186.985H243V548H593V53ZM455.234,283.752v-40.94h22.34v18.609h18.617V280.03h14.894V261.421H529.7V242.812h22.341v40.94H533.426v14.887h18.617v40.94H529.7V320.97H511.085V302.361H496.191V320.97H477.574v18.609h-22.34v-40.94h18.617V283.752H455.234Zm-171.277,0v-40.94H306.3v18.609h18.617V280.03h14.894V261.421h18.617V242.812h22.34v40.94H362.149v14.887h18.617v40.94h-22.34V320.97H339.809V302.361H324.915V320.97H306.3v18.609H283.957v-40.94h18.617V283.752H283.957Zm7.447,171.2V432.624h18.617V414.015h22.341V395.406H503.638v18.609h18.617v18.609H544.6v22.331H503.638V432.624H485.021V414.015H429.17v40.94H410.553v18.609H369.6V454.955H350.979V436.346H332.362v18.609H291.4Zm81.915-3.722H406.83v-33.5H373.319v33.5Zm-126.6-286.579H354.7V56.722H339.809V75.331H321.191V93.94H302.574v18.609H283.957v18.609H265.34v18.609H246.723v14.887Z"
-              />
-            </svg>
-          </span>
-        </h1>
-        <h1>4</h1>
-      </div>
-      <p className="description">:( Oops! page not found</p>
-      <p>
-        <Link to="/" className="back-link">
-          Back →
-        </Link>
-      </p>
-    </main>
+      {/* CSS for floating animation */}
+      <style jsx global>{`
+        @keyframes float {
+          0% { transform: translateY(0px); }
+          50% { transform: translateY(-20px); }
+          100% { transform: translateY(0px); }
+        }
+        @import url('https://fonts.googleapis.com/css2?family=Exo+2:wght@400;700&display=swap');
+      `}</style>
+    </Container>
   );
 };
 

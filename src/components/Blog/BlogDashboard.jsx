@@ -1,20 +1,19 @@
-import { Link } from 'react-router-dom';
+import React, { useEffect, useState } from 'react';
+import { Link, useNavigate } from 'react-router-dom';
 import '../css/blogdashboard.css';
-// import { Tooltip } from '@mui/material';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faBoxArchive, faEdit, faTrash, faUserSecret } from '@fortawesome/free-solid-svg-icons';
-import { confirmAlert } from 'react-confirm-alert';
-import 'react-confirm-alert/src/react-confirm-alert.css';
-import { useEffect, useState } from 'react';
-import axios from 'axios';
 import { useSelector } from 'react-redux';
+import axios from 'axios';
 import { Toaster, toast } from 'sonner';
 import MainblogLoader from '../user-credientials/MainblogLoader';
 import PrivateToggleDialog from './PrivateToggleDialog';
+import DeleteConfirmationDialog from './Deletedialog';
+import EditConfirmationDialog from './EditConfirmationDialog';
 
 export default function BlogDashboard() {
-
   const base_url = import.meta.env.VITE_URL || 'http://localhost:8080';
+  const navigate = useNavigate();
 
   const [blogs, setBlogs] = useState([]);
   const [likedblog, setLikedblog] = useState({});
@@ -22,22 +21,26 @@ export default function BlogDashboard() {
   const username = useSelector(state => state.user_info.username);
   const [isLoading, setIsLoading] = useState(true);
   const [isDialogOpen, setIsDialogOpen] = useState(false);
+  const [isPrivateDialogOpen, setIsPrivateDialogOpen] = useState(false);
   const [selectedBlog, setSelectedBlog] = useState(null);
-  const [hoveredBlogId, setHoveredBlogId] = useState(null);
+  const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
+  const [isEditDialogOpen, setIsEditDialogOpen] = useState(false);
+  const [blogToDelete, setBlogToDelete] = useState(null);
+  const [blogToEdit, setBlogToEdit] = useState(null);
 
-
-
-  async function confirmdeletex(id) {
+  async function confirmdeletex() {
     try {
-      const res = await axios.delete(`${base_url}/api/deleteblog/${id}`);
+      const res = await axios.delete(`${base_url}/api/deleteblog/${blogToDelete}`);
       if (res.status === 200) {
         toast.success('Blog Deleted Successfully', { duration: 2000 });
-        setTimeout(() => { window.location.reload() }, 2000)
+        setBlogs(prevBlogs => prevBlogs.filter(blog => blog._id !== blogToDelete));
       }
-      // console.log(res);
     } catch (error) {
       toast.error('Error Deleting Blog', { duration: 2000 });
       console.error(error);
+    } finally {
+      setIsDeleteDialogOpen(false);
+      setBlogToDelete(null);
     }
   }
 
@@ -46,22 +49,22 @@ export default function BlogDashboard() {
     return date.toDateString();
   }
 
-  const confirmdetelete = (id) => {
-    confirmAlert({
-      title: '⚠️ Are you sure you want to delete this blog?',
-      message: 'This action cannot be undone. 🗑️',
-      buttons: [
-        {
-          label: 'Yes',
-          onClick: () => confirmdeletex(id)
-        },
-        {
-          label: 'No',
-          onClick: null
-        }
-      ]
-    });
-  }
+  const openDeleteDialog = (id) => {
+    setBlogToDelete(id);
+    setIsDeleteDialogOpen(true);
+  };
+
+  const openEditDialog = (blog) => {
+    setBlogToEdit(blog);
+    setIsEditDialogOpen(true);
+  };
+
+  const handleConfirmEdit = () => {
+    if (blogToEdit) {
+      navigate(`/editblog/${blogToEdit._id}`);
+    }
+    setIsEditDialogOpen(false);
+  };
 
   const handleConfirmPrivate = async () => {
     if (!selectedBlog) return;
@@ -79,13 +82,13 @@ export default function BlogDashboard() {
       toast.error('Error Updating Blog Privacy', { duration: 2000 });
       console.error(error);
     } finally {
-      setIsDialogOpen(false);
+      setIsPrivateDialogOpen(false);
     }
   };
 
   const confirmUpdate = (id, isPrivate) => {
     setSelectedBlog({ id, isPrivate });
-    setIsDialogOpen(true);
+    setIsPrivateDialogOpen(true);
   };
 
   useEffect(() => {
@@ -100,43 +103,33 @@ export default function BlogDashboard() {
       }
     };
     getallblogs();
-  }, [])
+  }, [username, base_url]);
 
   useEffect(() => {
+    if (blogs.length > 0) {
+      const mostLikedBlog = blogs.reduce((mostLiked, blog) => {
+        return blog.likes.likedby.length > mostLiked.likes.likedby.length ? blog : mostLiked;
+      }, blogs[0]);
 
-    const mostLikedBlog = blogs.reduce((mostLiked, blog) => {
-      return blog.likes.likedby.length > mostLiked.likes.likedby.length ? blog : mostLiked;
-    }, blogs[0]);
-
-    if (mostLikedBlog) {
       setLikedblog(mostLikedBlog);
+
+      const mostCommentedBlog = blogs.reduce((mostCommented, blog) => {
+        return blog.comments.length > mostCommented.comments.length ? blog : mostCommented;
+      }, blogs[0]);
+
+      setCommentedBlog(mostCommentedBlog);
     } else {
       setLikedblog({
         author: "Default Author",
         title: "Default Title",
         date: "Default Date",
       });
-    }
-
-    const mostCommentedBlog = blogs.reduce((mostCommented, blog) => {
-      return blog.comments.length > mostCommented.comments.length ? blog : mostCommented;
-    }, blogs[0]);
-
-    if (mostCommentedBlog) {
-      setCommentedBlog(mostCommentedBlog);
-    } else {
       setCommentedBlog({
         author: "Default Author",
         title: "Default Title",
         date: "Default Date",
       });
     }
-
-    // console.log("Total Likes:", totalLikes);
-    // console.log("Total Comments:", totalComments);
-    // console.log("Total Blogs:", blogs.length);
-    // console.log("Most Liked Blog:", mostLikedBlog);
-    // console.log("Most Commented Blog:", mostCommentedBlog);
   }, [blogs]);
 
   return (
@@ -144,7 +137,7 @@ export default function BlogDashboard() {
       <Toaster position="top-center" />
       <div className="container-tag my-16 w-[1400px] flex">
         <div className="dashitems w-[1000px]">
-          <div className="metrics ml-36 flex mr-20 justify-between  px-8 py-6 rounded-3xl">
+          <div className="metrics ml-36 flex mr-20 justify-between px-8 py-6 rounded-3xl">
             <div className="likes flex flex-col">
               <div className='flex gap-1 '>
                 <h2 className='text-xl mx-2'>Likes</h2>
@@ -173,104 +166,117 @@ export default function BlogDashboard() {
               <span className='VCB'>Manage Blogs</span>
               <span className="line"></span>
             </div>
-            { isLoading ? <div className="loadderr ml-36 mr-16 mt-6"><MainblogLoader/></div> : blogs.length > 0 ? blogs.map((blog) => (
-              <div className="blogs ml-36 mr-16" key={blog._id} >
-                <div className="blogbodyyy">
-                  <div className="authinfo">
-                    <div className="authimage">
-                      <img src={blog.author_img || "pxfuel.jpg"} alt="Profile Image" />
+            { isLoading ? (
+              <div className="loadderr ml-36 mr-16 mt-6"><MainblogLoader/></div>
+            ) : blogs.length > 0 ? (
+              blogs.map((blog) => (
+                <div className="blogs ml-36 mr-16" key={blog._id}>
+                  <div className="blogbodyyy">
+                    <div className="authinfo">
+                      <div className="authimage">
+                        <img src={blog.author_img || "pxfuel.jpg"} alt="Profile Image" />
+                      </div>
+                      <div className="authname">
+                        <p>{blog.author || "Ravi Sharma"}</p>
+                      </div>
+                      <div className="blogdate">
+                        <p>{blog.date.slice(0, 10) || "Jan 01"}</p>
+                      </div>
+                      { blog.isPrivate && 
+                        <div className="isArchived ml-3 text-gray-400 px-2 border-2 rounded-2xl text-sm items-center">
+                          <p>Private</p>
+                        </div>
+                      }
                     </div>
-                    <div className="authname">
-                      <p>{blog.author || "Ravi Sharma"}</p>
+                    <div className="bodyblog">
+                      <div className="blog-title">
+                        <Link to={`/blog/${blog._id}`}><p>{blog.title || "Top 30 JavaScript Interview Questions and Answers for 2024"}</p></Link>
+                      </div>
+                      <div className="blog-body" dangerouslySetInnerHTML={{ __html: blog.body }}></div>
                     </div>
-                    <div className="blogdate">
-                      <p>{blog.date.slice(0, 10) || "Jan 01"}</p>
+                    <div className="blog-info">
                     </div>
-                    { blog.isPrivate ? 
-                    <div className="isArchived ml-3  text-gray-400 px-2  border-2 rounded-2xl  text-sm items-center">
-                      <p> Private </p>
-                    </div> : null
-                    }
                   </div>
-                  <div className="bodyblog">
-                    <div className="blog-title">
-                      <Link to={`/blog/${blog._id}`}><p>{blog.title || "Top 30 JavaScript Interview Questions and Answers for 2024"}</p></Link>
-                    </div>
-                    <div className="blog-body" dangerouslySetInnerHTML={{ __html: blog.body }}></div>
+                  <div className="blogimage">
+                    <img src={blog.blog_image || "pxfuel.jpg"} alt="" />
                   </div>
-                  <div className="blog-info">
-                  </div>
-                </div>
-                <div className="blogimage">
-                  <img src={blog.blog_image || "pxfuel.jpg"} alt="" />
-                </div>
-                <div className="blogmanageoptions">
+                  <div className="blogmanageoptions">
                   <div className="nav__item cursor-pointer flex item-center ">
-                    <Link to={`/editblog/${blog._id}`}><FontAwesomeIcon icon={faEdit} className='nav__item-icon' /></Link>
-                    <span className="nav__item-text">Edit</span>
-                  </div>
-                  <div className="nav__item  cursor-pointer">
-                    <FontAwesomeIcon icon={faTrash} className='nav__item-icon' onClick={() => confirmdetelete(blog._id)} />
-                    <span className="nav__item-text">Delete</span>
-                  </div>
-                  <div className="nav__item cursor-pointer">
-                    <FontAwesomeIcon icon={faUserSecret} className='nav__item-icon' onClick={() => confirmUpdate(blog._id, blog.isPrivate)} />
-                    <span className="nav__item-text">Private</span>
+                      <FontAwesomeIcon icon={faEdit} className='nav__item-icon' onClick={() => openEditDialog(blog)} />
+                      <span className="nav__item-text">Edit</span>
+                    </div>
+                    <div className="nav__item cursor-pointer">
+                      <FontAwesomeIcon icon={faTrash} className='nav__item-icon' onClick={() => openDeleteDialog(blog._id)} />
+                      <span className="nav__item-text">Delete</span>
+                    </div>
+                    <div className="nav__item cursor-pointer">
+                      <FontAwesomeIcon icon={faUserSecret} className='nav__item-icon' onClick={() => confirmUpdate(blog._id, blog.isPrivate)} />
+                      <span className="nav__item-text">Private</span>
+                    </div>
                   </div>
                 </div>
-              </div>
-            )) : <div className="no-blog mx-52 w-[400px] text-lg ">Looks like there are no blogs created by the user yet. Start writing and share your thoughts with the world!</div>
-            }
+              ))
+            ) : (
+              <div className="no-blog mx-52 w-[400px] text-lg ">Looks like there are no blogs created by the user yet. Start writing and share your thoughts with the world!</div>
+            )}
           </div>
         </div>
         { blogs.length > 0 &&
-        <div className="right-dash mx-8 w-[350px]">
-          <div className="right-dash-items">
-            <div className="mostlikedblog">
-              <h2>Most Liked</h2>
-              <div className="top-picksimg mb-12 mt-5">
-                <div className="top-headdx flex items-end gap-3">
-                  <img src={likedblog.author_img || "pxfuel.jpg"} alt="" />
-                  <h3>{likedblog.author || "Default Author"}</h3>
-                </div>
-                <div className="topick-title">
-                  <Link to={`/blog/${likedblog._id}`}><p>{likedblog.title || "Default Title"}</p></Link>
-                </div>
-                <div className="blog-foot flex gap-6">
-                  <p className='save-min-readx'>{timestamptodate(likedblog.date) || "Default Date"}</p>
-                  {/* //blog.date.slice(0, 10) */}
-                  <p className='save-min-read'>{likedblog.readingTime || "3"} min read</p>
+          <div className="right-dash mx-8 w-[350px]">
+            <div className="right-dash-items">
+              <div className="mostlikedblog">
+                <h2>Most Liked</h2>
+                <div className="top-picksimg mb-12 mt-5">
+                  <div className="top-headdx flex items-end gap-3">
+                    <img src={likedblog.author_img || "pxfuel.jpg"} alt="" />
+                    <h3>{likedblog.author || "Default Author"}</h3>
+                  </div>
+                  <div className="topick-title">
+                    <Link to={`/blog/${likedblog._id}`}><p>{likedblog.title || "Default Title"}</p></Link>
+                  </div>
+                  <div className="blog-foot flex gap-6">
+                    <p className='save-min-readx'>{timestamptodate(likedblog.date) || "Default Date"}</p>
+                    <p className='save-min-read'>{likedblog.readingTime || "3"} min read</p>
+                  </div>
                 </div>
               </div>
-            </div>
-            <div className="mostcommentedblog">
-              <h2>Most Commented</h2>
-              <div className="top-picksimg mb-12 mt-5">
-                <div className="top-headdx flex items-end gap-3">
-                  <img src={commentedBlog.author_img || "pxfuel.jpg"} alt="" />
-                  <h3>{commentedBlog.author || "Default Author"}</h3>
-                </div>
-                <div className="topick-title">
-                  <Link to={`/blog/${commentedBlog._id}`}><p>{commentedBlog.title || "Default Title"}</p></Link>
-                </div>
-                <div className="blog-foot flex gap-6">
-                  <p className='save-min-readx'>{timestamptodate(commentedBlog.date) || "Default Date"}</p>
-                  <p className='save-min-read'>{commentedBlog.readingTime || "3"} min read</p>
+              <div className="mostcommentedblog">
+                <h2>Most Commented</h2>
+                <div className="top-picksimg mb-12 mt-5">
+                  <div className="top-headdx flex items-end gap-3">
+                    <img src={commentedBlog.author_img || "pxfuel.jpg"} alt="" />
+                    <h3>{commentedBlog.author || "Default Author"}</h3>
+                  </div>
+                  <div className="topick-title">
+                    <Link to={`/blog/${commentedBlog._id}`}><p>{commentedBlog.title || "Default Title"}</p></Link>
+                  </div>
+                  <div className="blog-foot flex gap-6">
+                    <p className='save-min-readx'>{timestamptodate(commentedBlog.date) || "Default Date"}</p>
+                    <p className='save-min-read'>{commentedBlog.readingTime || "3"} min read</p>
+                  </div>
                 </div>
               </div>
             </div>
           </div>
-        </div>
         }
       </div>
       <PrivateToggleDialog
-        isOpen={isDialogOpen}
-        onClose={() => setIsDialogOpen(false)}
+        isOpen={isPrivateDialogOpen}
+        onClose={() => setIsPrivateDialogOpen(false)}
         onConfirm={handleConfirmPrivate}
         isPrivate={selectedBlog?.isPrivate}
       />
-    {/* </div> */}
+      <DeleteConfirmationDialog
+        isOpen={isDeleteDialogOpen}
+        onClose={() => setIsDeleteDialogOpen(false)}
+        onConfirm={confirmdeletex}
+      />
+       <EditConfirmationDialog
+        isOpen={isEditDialogOpen}
+        onClose={() => setIsEditDialogOpen(false)}
+        onConfirm={handleConfirmEdit}
+        blogTitle={blogToEdit?.title}
+      />
     </div>
-    
   );
 }
