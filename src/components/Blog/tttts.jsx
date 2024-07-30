@@ -10,6 +10,7 @@ import { Toaster, toast } from 'sonner'
 import Cookies from "js-cookie";
 import axios from "axios";
 import { set_user_info } from "../state";
+import { Tooltip } from "@mui/material";
 
 export default function Navbar() {
 
@@ -102,26 +103,26 @@ export default function Navbar() {
           </div>
 
           <div className="log">
-            <div className="profile-container">
-              <Link>
-                {profilePic ? (
-                  <img 
-                    ref={imageref} 
-                    src={profilePic} 
-                    alt="profilepic" 
-                    className="roundedProfilePic mr-5" 
-                    onClick={() => setOpen(!open)} 
-                  />
-                ) : (
-                  <FontAwesomeIcon icon={faUser} className="mr-4"/>
-                )}
-              </Link>
-            </div>
             {!asc && (
               <Link to='/login' className="loginp">
                 <p className="logx">Login?</p>
               </Link>
             )}
+            <div className="profile-container">
+              <Link>
+                {profilePic ? (
+                  <img
+                    ref={imageref}
+                    src={profilePic}
+                    alt="profilepic"
+                    className="roundedProfilePic mr-5"
+                    onClick={() => setOpen(!open)}
+                  />
+                ) : (
+                  <Link to='/login'><FontAwesomeIcon icon={faUser} className="mr-4" /></Link>
+                )}
+              </Link>
+            </div>
           </div>
         </div>
         {open && (

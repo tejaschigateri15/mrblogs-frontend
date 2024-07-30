@@ -53,7 +53,7 @@ export default function Mainpage() {
                 // console.log("dfg",import.meta.env.VITE_URL);
 
                 const allBlogsResponse = await axios.get(`${base_url}/api/getblog`);
-                console.log("all blogs ", allBlogsResponse.data);
+                // console.log("all blogs ", allBlogsResponse.data);
                 setBlogs(allBlogsResponse.data);
                 if (allBlogsResponse.data.length > 0) {
                     setIsLoading(false);

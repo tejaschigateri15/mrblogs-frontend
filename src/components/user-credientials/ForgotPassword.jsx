@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { TextField, Button, InputAdornment, ThemeProvider, createTheme } from '@mui/material';
+import { TextField, Button, InputAdornment, ThemeProvider, createTheme, CircularProgress } from '@mui/material';
 import { Link } from 'react-router-dom';
 import axios from 'axios';
 import { EmailOutlined } from '@mui/icons-material';
@@ -18,9 +18,11 @@ export default function ForgotPassword() {
   const [email, setEmail] = useState('');
   const [message, setMessage] = useState('');
   const [error, setError] = useState('');
+  const [isLoading, setIsLoading] = useState(false);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    setIsLoading(true);
     try {
       const response = await axios.post(`${base_url}/forgotpassword`, { email });
       setMessage(response.data.message);
@@ -28,6 +30,8 @@ export default function ForgotPassword() {
     } catch (err) {
       setError(err.response?.data?.error || 'An error occurred. Please try again.');
       setMessage('');
+    } finally {
+      setIsLoading(false);
     }
   };
 
@@ -54,6 +58,7 @@ export default function ForgotPassword() {
                   </InputAdornment>
                 ),
               }}
+              disabled={isLoading}
             />
             {error && <p className="error-message">{error}</p>}
             {message && <p className="success-message">{message}</p>}
@@ -62,8 +67,16 @@ export default function ForgotPassword() {
               fullWidth
               type="submit"
               className="forgot-password-button"
+              disabled={isLoading}
             >
-              Send Reset Link
+              {isLoading ? (
+                <>
+                  <CircularProgress size={24} color="inherit" />
+                  <span style={{ marginLeft: '10px' }}>Sending...</span>
+                </>
+              ) : (
+                'Send Reset Link'
+              )}
             </Button>
           </form>
           <div className="forgot-password-options">
@@ -74,7 +87,7 @@ export default function ForgotPassword() {
         </div>
         <div className="forgot-password-image">
           <div className="image-overlay">
-            <h2 >Reset Your Password on <span>Mr.</span> Blogs</h2>
+            <h2>Reset Your Password on <span>Mr.</span> Blogs</h2>
             <p>We'll help you get back to sharing your stories</p>
           </div>
         </div>

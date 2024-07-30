@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { TextField, Button, IconButton, InputAdornment, ThemeProvider, createTheme } from '@mui/material';
+import { TextField, Button, IconButton, InputAdornment, ThemeProvider, createTheme, CircularProgress } from '@mui/material';
 import { Link, useNavigate, useLocation } from 'react-router-dom';
 import axios from 'axios';
 import { Visibility, VisibilityOff, LockOutlined } from '@mui/icons-material';
@@ -24,6 +24,7 @@ export default function ResetPassword() {
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [message, setMessage] = useState('');
   const [error, setError] = useState('');
+  const [isLoading, setIsLoading] = useState(false);
 
   useEffect(() => {
     const searchParams = new URLSearchParams(location.search);
@@ -41,6 +42,7 @@ export default function ResetPassword() {
       setError('Passwords do not match');
       return;
     }
+    setIsLoading(true);
     try {
       const response = await axios.post(`${base_url}/resetpassword`, { token, password });
       setMessage(response.data.message);
@@ -49,6 +51,8 @@ export default function ResetPassword() {
     } catch (err) {
       setError(err.response?.data?.error || 'An error occurred. Please try again.');
       setMessage('');
+    } finally {
+      setIsLoading(false);
     }
   };
 
@@ -79,12 +83,14 @@ export default function ResetPassword() {
                     <IconButton
                       onClick={() => setShowPassword(!showPassword)}
                       edge="end"
+                      disabled={isLoading}
                     >
                       {showPassword ? <VisibilityOff /> : <Visibility />}
                     </IconButton>
                   </InputAdornment>
                 ),
               }}
+              disabled={isLoading}
             />
             <TextField
               fullWidth
@@ -104,12 +110,14 @@ export default function ResetPassword() {
                     <IconButton
                       onClick={() => setShowConfirmPassword(!showConfirmPassword)}
                       edge="end"
+                      disabled={isLoading}
                     >
                       {showConfirmPassword ? <VisibilityOff /> : <Visibility />}
                     </IconButton>
                   </InputAdornment>
                 ),
               }}
+              disabled={isLoading}
             />
             {error && <p className="error-message">{error}</p>}
             {message && <p className="success-message">{message}</p>}
@@ -118,9 +126,16 @@ export default function ResetPassword() {
               fullWidth
               type="submit"
               className="reset-password-button"
-              disabled={!token}
+              disabled={!token || isLoading}
             >
-              Reset Password
+              {isLoading ? (
+                <>
+                  <CircularProgress size={24} color="inherit" />
+                  <span style={{ marginLeft: '10px' }}>Resetting...</span>
+                </>
+              ) : (
+                'Reset Password'
+              )}
             </Button>
           </form>
           <div className="reset-password-options">
