@@ -228,6 +228,15 @@ body {
         font-size: 14px;
         padding: 8px 8px 4px 8px;
     }
+    .profile-options {
+        right: 10px;
+        width: auto;
+        min-width: 150px;
+    }
+
+    .profile-options ul::before {
+        right: 20px;
+    }
 }
 
 @media (max-width: 480px) {
@@ -259,6 +268,20 @@ body {
         font-size: 12px;
         padding: 6px 6px 3px 6px;
     }
+    .profile-options {
+        right: 5px;
+        top: 55px;
+        padding: 8px 15px;
+    }
+
+    .profile-options ul li {
+        font-size: 14px;
+        margin-bottom: 8px;
+    }
+
+    .profile-options ul::before {
+        right: 15px;
+    }
 }
 
 
@@ -287,8 +310,13 @@ body {
         font-size: 18px;
     }
 
+    .profile-options ul::before{
+        display: none;
+    }
     
-        
+    .profile-options{
+        right: 3px;
+    }
 
 }
 
@@ -308,35 +336,35 @@ body {
     transition: 0.3s ease-in-out;
 }
 
-.profile-options{
+.profile-options {
     position: absolute;
     top: 60px;
     right: 22px;
     background-color: rgb(231, 233, 232);
     padding: 10px 20px;
     border-radius: 10px;
-    /* box-shadow: 0 0 10px rgba(0, 0, 0, 0.1); */
     transition: 0.3s all ease;
+    z-index: 1000;
 }
 
-.profile-options ul{
+.profile-options ul {
     list-style-type: none;
+    padding: 0;
+    margin: 0;
 }
 
-.profile-options ul li{
+.profile-options ul li {
     margin-bottom: 10px;
-    /* padding: 5px 10px; */
+    padding: 5px 0;
 }
 
-.profile-options ul li:hover{
+.profile-options ul li:hover {
     cursor: pointer;
     color: rgb(120, 86, 255);
-    /* background-color: rgb(194, 241, 241); */
     transition: 0.3s ease;
-
 }
 
-.profile-options ul::before{
+.profile-options ul::before {
     content: '';
     position: absolute;
     top: -7px;
@@ -345,6 +373,5 @@ body {
     height: 0;
     border-left: 10px solid transparent;
     border-right: 10px solid transparent;
-    /* box-shadow: 0 1px 10px rgba(0, 0, 0, 0.2); */
     border-bottom: 10px solid rgb(231, 233, 232);
 }

@@ -258,7 +258,8 @@ export default function Createblog() {
                         textAlign: "center",
                         transition: 'box-shadow 0.3s',
                         boxShadow: 'none',
-                        marginTop: '60px'
+                        marginTop: '60px',
+                        marginLeft: '20px'
                     }}
                     variant="contained"
                     onMouseOver={(e) => e.currentTarget.style.boxShadow = '0px 0px 10px 0px rgba(120, 86, 255, 0.75)'}

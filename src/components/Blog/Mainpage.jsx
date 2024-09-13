@@ -65,7 +65,7 @@ export default function Mainpage() {
                     if (recentlySavedResponse.data.message === "No saved blogs") {
                         // console.log("No saved blogs found");
                     } else {
-                        console.log("Recently saved blogs: ", recentlySavedResponse.data);
+                        // console.log("Recently saved blogs: ", recentlySavedResponse.data);
                         setRecentlySaved(recentlySavedResponse.data.recently_savedblog);
                         const { blog_id, profile_pic } = recentlySavedResponse.data;
 

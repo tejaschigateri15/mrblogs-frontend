@@ -37,7 +37,7 @@ export default function Blogtopics() {
                 // const res = await axios.get(`http://localhost:8080/api/category/${category}`);
                 // const getcategoryinfo = await axios.get(`http://localhost:8080/api/getcategoryinfo/${category}`);
 
-                console.log(getcategoryinfo.data);
+                // console.log(getcategoryinfo.data);
                 if (getcategoryinfo.data) {
                     const { followed_by } = getcategoryinfo.data;
 

@@ -116,7 +116,7 @@ export default function Currentblog() {
     const fetchblog = async () => {
       try {
         const res = await axios.get(`${base_url}/api/getblog/${paramss.id}`);
-        console.log(res.data);
+        // console.log(res.data);
         const { author, author_img, body, date, title, blog_image, category, tags } = res.data;
         setBlog({ author, author_img, body, date, title, blog_image, category, tags });
         setDate(date.slice(0, 10));
@@ -160,7 +160,7 @@ export default function Currentblog() {
       }
     };
 
-    fetchProfile();
+    // fetchProfile();
 
     const fetchlikesandsaved = async () => {
       const res = await axios.get(`${base_url}/api/getlikesandsaved`, {

@@ -67,10 +67,13 @@ export default function Navbar() {
   }
 
   const handleOutsideClick = (e) => {
-    if (!menuref.current.contains(e.target) && !imageref.current.contains(e.target)) {
-      setOpen(false);
+    if (menuref.current && imageref.current) {
+      if (!menuref.current.contains(e.target) && !imageref.current.contains(e.target)) {
+        setOpen(false);
+      }
     }
-  }
+  };
+  
 
   useEffect(() => {
     window.addEventListener('click', handleOutsideClick);
@@ -110,7 +113,7 @@ export default function Navbar() {
             )}
             <div className="profile-container">
               <Link>
-                {profilePic ? (
+                {asc && profilePic ? (
                   <img
                     ref={imageref}
                     src={profilePic}
