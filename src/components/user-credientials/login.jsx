@@ -37,10 +37,16 @@ export default function Signin() {
     e.preventDefault();
     try {
       const response = await axios.post(`${base_url}/login`, formData);
-      const { info, accessToken, refreshToken } = response.data;
+      const { info, accessToken, refreshToken,testacessToken } = response.data;
       const { username, id, profile_pic } = info;
 
       Cookies.set('accessToken', accessToken, {
+        expires: 7,
+        sameSite: 'strict',
+        secure: true,
+      });
+
+      Cookies.set('testaccessToken', testacessToken, {
         expires: 7,
         sameSite: 'strict',
         secure: true,

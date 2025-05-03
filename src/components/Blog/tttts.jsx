@@ -15,6 +15,7 @@ import { Tooltip } from "@mui/material";
 export default function Navbar() {
 
   const base_url = import.meta.env.VITE_URL || 'http://localhost:8080';
+  
 
   const [icon, setIcon] = useState(true);
   const asc = Cookies.get('accessToken')
@@ -56,15 +57,37 @@ export default function Navbar() {
     }
   }
 
-  const handlelogout = () => {
+  const handlelogout = async () => {
+  
     dispatch(set_user_info({ username: '', id: '', profile_pic: '' }));
+    const testaccessToken = Cookies.get('testaccessToken');
+  
+    try {
+      const res = await axios.delete(`${base_url}/api/logout`, {
+        headers: {
+          'X-TestAccessToken': `Bearer ${testaccessToken}`,
+        },
+      });
+  
+      if (res.status === 200) {
+        console.log('Logout successful');
+        toast.success(res.data.message); // Use the message from the backend API
+      } else {
+        console.log('Logout failed');
+        toast.error('Logout failed');
+      }
+    } catch (error) {
+      console.error('Error during logout:', error);
+      toast.error('Logout failed');
+    }
+  
     Cookies.remove('accessToken');
     Cookies.remove('refreshToken');
+  
     setTimeout(() => {
-      toast.success('Logged out successfully 👍');
       window.location.href = '/login';
     }, 3000);
-  }
+  };
 
   const handleOutsideClick = (e) => {
     if (menuref.current && imageref.current) {

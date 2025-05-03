@@ -32,6 +32,8 @@ export default function Editblog() {
     const profileimage = useSelector(state => state.user_info.profile_pic)  // current profile image of logged in user
 
     const accessToken = Cookies.get('accessToken')
+    const testaccessToken = Cookies.get('testaccessToken')
+
     const params = new useParams( )
     const formdata = {
         author: username,
@@ -92,14 +94,15 @@ export default function Editblog() {
                     toast.error('Please select category');
                     return;
                 }
-                const res = await axios.post(`${base_url}/api/editblog`, formdata,{
+                const res = await axios.post(`${base_url}/api/testeditblog`, formdata,{
                     params: {
                         // accessToken: accessToken,
                         blog_id: params.id
                     },
                     headers: {
                         Authorization: `Bearer ${accessToken}`,
-                      },
+                        'X-TestAccessToken': `Bearer ${testaccessToken}`
+                    },
                 });
                 // console.log("formdata = ", res.data);
                 <Toaster position="top-center" />

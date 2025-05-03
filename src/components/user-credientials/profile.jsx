@@ -1,38 +1,41 @@
 import { Link, Outlet, useNavigate } from "react-router-dom";
-import '../css/profile.css'
+import "../css/profile.css";
 import { useEffect, useState } from "react";
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faBookmark, faComment, faEdit, faList, faSignOut } from '@fortawesome/free-solid-svg-icons';
-import { useDispatch, useSelector } from 'react-redux';
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import {
+  faBookmark,
+  faComment,
+  faEdit,
+  faList,
+  faSignOut,
+} from "@fortawesome/free-solid-svg-icons";
+import { useDispatch, useSelector } from "react-redux";
 import axios from "axios";
 import { TextField, Tooltip } from "@mui/material";
 // import toast from 'react-hot-toast';
 import { SocialIcon } from "react-social-icons";
-import { Toaster, toast } from 'sonner'
+import { Toaster, toast } from "sonner";
 import { set_user_info } from "../state";
 import Cookies from "js-cookie";
 
 export default function ProfileDashboard() {
+  const base_url = import.meta.env.VITE_URL || "http://localhost:8080";
 
-  const base_url = import.meta.env.VITE_URL || 'http://localhost:8080';
-
-  const user_info = useSelector(state => state.user_info);
+  const user_info = useSelector((state) => state.user_info);
   const { username } = user_info;
-  const accessToken = useSelector(state => state.user_info.accessToken);
+  const accessToken = useSelector((state) => state.user_info.accessToken);
   // const [fetchedName, setFetchedName] = useState('');
-  const [fetchedbio, setFetchedbio] = useState('');
-  const [fetchedInsta, setFetchedInsta] = useState('');
-  const [fetchedLinkedin, setFetchedLinkedin] = useState('');
-  const [fetchedName, setFetchedName] = useState('');
+  const [fetchedbio, setFetchedbio] = useState("");
+  const [fetchedInsta, setFetchedInsta] = useState("");
+  const [fetchedLinkedin, setFetchedLinkedin] = useState("");
+  const [fetchedName, setFetchedName] = useState("");
 
-  const dispatch = useDispatch()
+  const dispatch = useDispatch();
   const navigate = useNavigate();
-  const asc = Cookies.get('accessToken')
+  const asc = Cookies.get("accessToken");
   // console.log("sf", asc)
 
   const [image, setImage] = useState(null);
-
-
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -40,20 +43,18 @@ export default function ProfileDashboard() {
 
     try {
       const formData = new FormData();
-      formData.append('image', image);
+      formData.append("image", image);
 
       const res = await axios.post(`${base_url}/upload`, formData, {
         headers: {
-          'Content-Type': 'multipart/form-data',
+          "Content-Type": "multipart/form-data",
         },
       });
 
       // console.log("Response:", res.data);
-
-
     } catch (err) {
       console.error("Error:", err);
-      // toast.error('Error during upload'); 
+      // toast.error('Error during upload');
     }
   };
 
@@ -61,7 +62,7 @@ export default function ProfileDashboard() {
     const fetchProfile = async () => {
       if (!accessToken) {
         setFetchedbio(
-          <span >
+          <span>
             Welcome! Please{" "}
             <Link to="/login" style={{ color: "#28a745" }}>
               login
@@ -76,15 +77,18 @@ export default function ProfileDashboard() {
         // return;
       }
       try {
-        const response = await axios.get(`${base_url}/api/getprofile/${username}`, {
-          headers: {
-            Authorization: `Bearer ${accessToken}`,
-          },
-        });
+        const response = await axios.get(
+          `${base_url}/api/getprofile/${username}`,
+          {
+            headers: {
+              Authorization: `Bearer ${accessToken}`,
+            },
+          }
+        );
         // console.log("data  : ", response.data)
         if (response.status === 401) {
-          toast.error('Please Login again');
-          navigate('/login');
+          toast.error("Please Login again");
+          navigate("/login");
         }
         if (response.data) {
           // console.log("Response:", response.data);
@@ -95,43 +99,46 @@ export default function ProfileDashboard() {
           setFetchedLinkedin(linkedin);
           setFetchedName(name);
           // console.log("fetchedName", fetchedName)
-          dispatch(set_user_info({ username, id: '1', profile_pic }));
-        }
-        else {
+          dispatch(set_user_info({ username, id: "1", profile_pic }));
+        } else {
           setFetchedbio(
             <span>
               Your profile is incomplete. Please go to the{" "}
-              <Link to="/editprofile" style={{ color: "#28a745" }} className="ml-1">
+              <Link
+                to="/editprofile"
+                style={{ color: "#28a745" }}
+                className="ml-1"
+              >
                 /editprofile
               </Link>{" "}
-              page to edit your profile and add your bio, Instagram, LinkedIn, and profile image.
+              page to edit your profile and add your bio, Instagram, LinkedIn,
+              and profile image.
             </span>
           );
         }
       } catch (error) {
         // toast.error('Error during fetch, please try to login again');
         console.error(error);
-        console.log("url", window.location.href)
+        console.log("url", window.location.href);
       }
     };
     fetchProfile();
   }, []);
 
-
-
   const handlelogout = () => {
     // let y=false
-    dispatch(set_user_info({ username: '', id: '', profile_pic: '' }))
+    dispatch(set_user_info({ username: "", id: "", profile_pic: "" }));
 
-    Cookies.remove('accessToken');
+    Cookies.remove("accessToken");
 
-    Cookies.remove('refreshToken');
+    Cookies.remove("refreshToken");
 
-    setTimeout(() => { toast.success('Logged out successfully 👍') }, 3000)
+    setTimeout(() => {
+      toast.success("Logged out successfully 👍");
+    }, 3000);
 
-    navigate('/login')
-  }
-
+    navigate("/login");
+  };
 
   return (
     // name , pic , bio , insta , linkedin
@@ -140,62 +147,101 @@ export default function ProfileDashboard() {
       <Toaster position="top-center" />
       <div className="rightoption">
         <div className="profilesettings">
-          <div className="profilesettingname"><h2>Profile Settings</h2></div>
+          <div className="profilesettingname">
+            <h2>Profile Settings</h2>
+          </div>
           <div className="profilelinks">
-            <Link to="/editprofile"><p>EDIT PROFILE <FontAwesomeIcon icon={faEdit} /></p></Link>
-            <button onClick={handlelogout}><a href=""><p>LOGOUT <FontAwesomeIcon icon={faSignOut} /></p></a></button>
+            <Link to="/editprofile">
+              <p>
+                EDIT PROFILE <FontAwesomeIcon icon={faEdit} />
+              </p>
+            </Link>
+            <button onClick={handlelogout}>
+              <a href="">
+                <p>
+                  LOGOUT <FontAwesomeIcon icon={faSignOut} />
+                </p>
+              </a>
+            </button>
           </div>
         </div>
       </div>
       <div className="profilecard shadow-md">
         <div className="profileitems">
           <div className={image ? "profilepic" : ""} id="xcv">
-            <img src={image || "Default_pfp.svg.webp"} alt="" width="150px" height="170px" />
-            <div>
-              <div className="upload">
-                <form action="" encType="multipart/form-data" onSubmit={handleSubmit}>
-                  <div className="wrap">
-                    <TextField
-                      name="upload-photo"
-                      type="file"
-                      className=""
-                      id="upload-photo"
-                    // onChange={handleImage}
-                    />
-                    {/* <p className="ff"><button type="submit">Upload Image</button></p> */}
-                  </div>
-                </form>
-              </div>
-
-
-            </div>
-
+            <img
+              src={image || "Default_pfp.svg.webp"}
+              alt=""
+              width="150px"
+              height="170px"
+            />
+            <div></div>
           </div>
           <div className="profileinfo">
             <div className="profilename">
-              <div className="profile-name"><h2>{username || "Guest User"}</h2>
+              <div className="profile-name">
+                <h2>{username || "Guest User"}</h2>
                 {/* <span>{id}</span> */}
               </div>
-              <div className="edit-icon"><Tooltip title="Write Blogs" arrow><button disabled><Link to="/writeblog"><FontAwesomeIcon icon={faEdit} /></Link></button></Tooltip></div>
+              <div className="edit-icon">
+                <Tooltip title="Write Blogs" arrow>
+                  <button disabled>
+                    <Link to="/writeblog">
+                      <FontAwesomeIcon icon={faEdit} />
+                    </Link>
+                  </button>
+                </Tooltip>
+              </div>
             </div>
-            <div className="profilebio"> <p>{fetchedbio || <span>
-              Your profile is incomplete. Please go to the{" "}
-              <Link to="/editprofile" style={{ color: "#28a745" }} className="ml-1">
-                /editprofile
-              </Link>{" "}
-              page to edit your profile and add your bio, Instagram, LinkedIn, and profile image.
-            </span>}</p></div>
+            <div className="profilebio">
+              {" "}
+              <p>
+                {fetchedbio || (
+                  <span>
+                    Your profile is incomplete. Please go to the{" "}
+                    <Link
+                      to="/editprofile"
+                      style={{ color: "#28a745" }}
+                      className="ml-1"
+                    >
+                      /editprofile
+                    </Link>{" "}
+                    page to edit your profile and add your bio, Instagram,
+                    LinkedIn, and profile image.
+                  </span>
+                )}
+              </p>
+            </div>
             <div className="blogscount flex justify-between items-center">
               <div className="socialmedlinks flex gap-3">
                 <div className="insta">
-                  <SocialIcon network="instagram" url={fetchedInsta.length > 0 ? fetchedInsta : ""} fgColor="#E1306C" bgColor="white" style={{ ':hover': { fgColor: "pink" } }} />
+                  <SocialIcon
+                    network="instagram"
+                    url={fetchedInsta.length > 0 ? fetchedInsta : ""}
+                    fgColor="#E1306C"
+                    bgColor="white"
+                    style={{ ":hover": { fgColor: "pink" } }}
+                  />
                 </div>
                 <div className="linkedin">
-                  <SocialIcon network="linkedin" url={fetchedLinkedin.length > 0 ? fetchedLinkedin : ""} fgColor="#0077B5" bgColor="white" />
+                  <SocialIcon
+                    network="linkedin"
+                    url={fetchedLinkedin.length > 0 ? fetchedLinkedin : ""}
+                    fgColor="#0077B5"
+                    bgColor="white"
+                  />
                 </div>
               </div>
               <div className="blogdashboard  mr-1 bg-slate-200 px-4 py-2 rounded-lg">
-                <Link className="flex gap-3" to="/blogdashboard"><p>Blog Dashboard</p><img src="/dashboard_1828765.png" alt="" width="20px" height="10px" /></Link>
+                <Link className="flex gap-3" to="/blogdashboard">
+                  <p>Blog Dashboard</p>
+                  <img
+                    src="/dashboard_1828765.png"
+                    alt=""
+                    width="20px"
+                    height="10px"
+                  />
+                </Link>
               </div>
             </div>
             {/* <p>5 Blogs {username || "hello"} </p> */}
@@ -206,9 +252,30 @@ export default function ProfileDashboard() {
       <div className="mantain">
         <div className="main_allblog">
           <div className="conty">
-            <button ><Link to='/profile/'> <p>All Blogs <FontAwesomeIcon icon={faList} /></p> </Link></button>
-            <button><Link to='/profile/comments'> <p>Comments <FontAwesomeIcon icon={faComment} /></p> </Link></button>
-            <button ><Link to='/profile/savedblog'> <p>Saved Blogs <FontAwesomeIcon icon={faBookmark} /></p> </Link></button>
+            <button>
+              <Link to="/profile/">
+                {" "}
+                <p>
+                  All Blogs <FontAwesomeIcon icon={faList} />
+                </p>{" "}
+              </Link>
+            </button>
+            <button>
+              <Link to="/profile/comments">
+                {" "}
+                <p>
+                  Comments <FontAwesomeIcon icon={faComment} />
+                </p>{" "}
+              </Link>
+            </button>
+            <button>
+              <Link to="/profile/savedblog">
+                {" "}
+                <p>
+                  Saved Blogs <FontAwesomeIcon icon={faBookmark} />
+                </p>{" "}
+              </Link>
+            </button>
           </div>
         </div>
       </div>

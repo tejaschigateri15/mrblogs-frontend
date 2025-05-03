@@ -200,6 +200,7 @@ export default function Currentblog() {
   const handleLike = async () => {
     if (asc) {
       try {
+        const testaccessToken = Cookies.get('testaccessToken');
         const res = await axios.post(`${base_url}/api/likeblog`, { blog_id: paramss.id, username: username });
         if (res.data) {
           toast.success('Blog liked successfully', { duration: 2000 });
