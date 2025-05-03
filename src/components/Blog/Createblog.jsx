@@ -32,6 +32,7 @@ export default function Createblog() {
     const profileimage = useSelector(state => state.user_info.profile_pic)  // current profile image of logged in user
 
     const accessToken = Cookies.get('accessToken')
+    const testaccessToken = Cookies.get('testaccessToken')
     const formdata = {
         author: username,
         author_img: profileimage,
@@ -66,10 +67,17 @@ export default function Createblog() {
                     toast.error('Please select category');
                     return;
                 }
+
+                if (!testaccessToken){
+                    toast.error('Please login first');
+                    return;
+                }
+
                 const res = await axios.post(`${base_url}/api/createblog`, formdata,{
                     headers: {
                         Authorization: `Bearer ${accessToken}`,
-                      },
+                        'X-TestAccessToken': `Bearer ${testaccessToken}`
+                    },
                 });
                 // console.log("formdata = ", res.data);
                 <Toaster position="top-center" />
@@ -85,9 +93,24 @@ export default function Createblog() {
                 toast.success('Blog created successfully 👍',{duration:2000})
 
             } catch (err) {
-                console.log(err);
-                toast.error('An error occurred during the upload process. Please try again, or consider logging in again.'); 
-
+                // Check specifically for 401 Unauthorized errors
+                if (err.response && err.response.status === 401) {
+                    toast.error('Session expired. Please login again to continue.', {
+                        duration: 3000,
+                        dismissible: true,
+                        action: {
+                            label: 'Login',
+                            onClick: () => window.location.href = '/login' // Redirect to login page
+                        },
+                        onAutoClose: () => console.log('Toast closed automatically after timeout')
+                    });
+                } else {
+                    console.log(err);
+                    toast.error('An error occurred during the upload process. Please try again.', {
+                        duration: 3000,
+                        dismissible: true
+                    }); 
+                }
             }
         }
         else{

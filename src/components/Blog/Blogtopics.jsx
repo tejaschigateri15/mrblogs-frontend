@@ -10,6 +10,7 @@ import calculatereadtime from '../Utils/Calreadtime';
 import { useSelector } from 'react-redux';
 import { Toaster, toast } from 'sonner';
 import TopicLoader from '../user-credientials/TopicLoader';
+import Cookies from 'js-cookie';
 
 export default function Blogtopics() {
 
@@ -26,6 +27,8 @@ export default function Blogtopics() {
     const params = useParams();
     const username = useSelector(state => state.user_info.username);
     const [isFollowed, setIsFollowed] = useState(false);
+
+    const testaccessToken = Cookies.get('testaccessToken')
 
 
     useEffect(() => {
@@ -65,21 +68,44 @@ export default function Blogtopics() {
 
 
     const handleFollow = async (category) => {
-        if (!username) {
-            toast.error('Please Login to Follow');
+        const accessToken = Cookies.get('accessToken');
+        
+        if (!accessToken || !username) {
+            toast.error('Please login to follow this category', { duration: 2000 });
             return;
         }
+        
         try {
-            const res = await axios.post(`${base_url}/api/followcategory`, { category, username });
-            // const res = await axios.post(`http://localhost:8080/api/followcategory`, { category, username });
-
+            const testaccessToken = Cookies.get('testaccessToken');
+            if (!testaccessToken) {
+                toast.error('Test access token is missing. Please login again.', { duration: 2000 });
+                return;
+            }
+            
+            const res = await axios.post(
+                `${base_url}/api/followcategory`, 
+                { category, username },
+                {
+                    headers: {
+                        Authorization: `Bearer ${accessToken}`,
+                        'X-TestAccessToken': `Bearer ${testaccessToken}`
+                    },
+                }
+            );
+    
             if (res.status === 200) {
-                toast.success(res.data);
+                toast.success(res.data, { duration: 2000 });
+                setIsFollowed(true);
+                setTotalFollowers(prev => prev + 1);
                 setRefresh(!refresh);
             }
-
         } catch (err) {
             console.error(err);
+            if (err.response && err.response.status === 401) {
+                toast.error('Your session has expired. Please login again.', { duration: 3000 });
+            } else {
+                toast.error('Failed to follow category. Please try again.', { duration: 2000 });
+            }
         }
     }
 

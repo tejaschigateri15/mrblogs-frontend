@@ -60,14 +60,9 @@ export default function Navbar() {
   const handlelogout = async () => {
   
     dispatch(set_user_info({ username: '', id: '', profile_pic: '' }));
-    const testaccessToken = Cookies.get('testaccessToken');
   
     try {
-      const res = await axios.delete(`${base_url}/api/logout`, {
-        headers: {
-          'X-TestAccessToken': `Bearer ${testaccessToken}`,
-        },
-      });
+      const res = await axios.delete(`${base_url}/api/logout`);
   
       if (res.status === 200) {
         console.log('Logout successful');

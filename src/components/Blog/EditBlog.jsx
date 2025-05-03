@@ -53,7 +53,7 @@ export default function Editblog() {
         const getblogbyId = async () => {
             try {
                 const res = await axios.get(`${base_url}/api/getblog/${params.id}`);
-                const {blog_image,tags} = res.data;
+                const {blog_image} = res.data;
                 // console.log("blog data = ",res.data);
                 setTitle(res.data.title);
                 setText(res.data.body);
@@ -94,6 +94,11 @@ export default function Editblog() {
                     toast.error('Please select category');
                     return;
                 }
+                if(!testaccessToken){
+                    toast.error('Test access token is missing. Please login again.', { duration: 2000 });
+                    return;
+                }
+
                 const res = await axios.post(`${base_url}/api/testeditblog`, formdata,{
                     params: {
                         // accessToken: accessToken,
