@@ -58,30 +58,61 @@ export default function Navbar() {
   }
 
   const handlelogout = async () => {
-  
-    dispatch(set_user_info({ username: '', id: '', profile_pic: '' }));
-  
     try {
-      const res = await axios.delete(`${base_url}/api/logout`);
-  
+      // Get the test access token before clearing cookies
+      const testaccessToken = Cookies.get('testaccessToken');
+      const accessToken = Cookies.get('accessToken');
+      
+      if (!testaccessToken || !accessToken) {
+        // If tokens aren't available, just clear everything locally
+        handleLocalLogout(false); // Pass false to not show the local logout toast
+        return;
+      }
+      
+      // Call the logout API
+      const res = await axios.delete(`${base_url}/api/logout`, {
+        headers: {
+          Authorization: `Bearer ${accessToken}`,
+          'X-TestAccessToken': `Bearer ${testaccessToken}`
+        }
+      });
+      
       if (res.status === 200) {
-        console.log('Logout successful');
-        toast.success(res.data.message); // Use the message from the backend API
-      } else {
-        console.log('Logout failed');
-        toast.error('Logout failed');
+        // Success message will be shown from the local logout function
+        handleLocalLogout(false, res.data.message || 'Logged out successfully');
       }
     } catch (error) {
       console.error('Error during logout:', error);
-      toast.error('Logout failed');
+      
+      if (error.response && error.response.status === 401) {
+        handleLocalLogout(false, 'Session already expired');
+      } else {
+        handleLocalLogout(false, 'Server logout failed, but you\'ve been logged out locally');
+      }
     }
+  };
   
+  // Separate function to handle the local logout operations
+  const handleLocalLogout = (showDefaultToast = true, customMessage = null) => {
+    // Clear Redux state
+    dispatch(set_user_info({ username: '', id: '', profile_pic: '' }));
+    
+    // Clear all auth cookies
     Cookies.remove('accessToken');
     Cookies.remove('refreshToken');
-  
+    Cookies.remove('testaccessToken');
+    
+    // Show toast for feedback - either the custom message or the default
+    if (customMessage) {
+      toast.success(customMessage, { duration: 2000 });
+    } else if (showDefaultToast) {
+      toast.success('Logging out...', { duration: 2000 });
+    }
+    
+    // Redirect after a short delay to allow the toast to be seen
     setTimeout(() => {
       window.location.href = '/login';
-    }, 3000);
+    }, 2000);
   };
 
   const handleOutsideClick = (e) => {
