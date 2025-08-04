@@ -34,6 +34,7 @@ export default function Mainpage() {
     const [issavedblog, setIsSavedBlog] = useState(false);
     const [isLoading, setIsLoading] = useState(true);
     const asc = Cookies.get('accessToken')
+    const testaccessToken = Cookies.get('testaccessToken')
 
     const [scrollPosition, setScrollPosition] = useState(0);
     const [scrollLength, setScrollLength] = useState(0);

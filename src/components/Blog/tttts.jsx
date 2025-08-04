@@ -15,6 +15,7 @@ import { Tooltip } from "@mui/material";
 export default function Navbar() {
 
   const base_url = import.meta.env.VITE_URL || 'http://localhost:8080';
+  
 
   const [icon, setIcon] = useState(true);
   const asc = Cookies.get('accessToken')
@@ -56,15 +57,63 @@ export default function Navbar() {
     }
   }
 
-  const handlelogout = () => {
+  const handlelogout = async () => {
+    try {
+      // Get the test access token before clearing cookies
+      const testaccessToken = Cookies.get('testaccessToken');
+      const accessToken = Cookies.get('accessToken');
+      
+      if (!testaccessToken || !accessToken) {
+        // If tokens aren't available, just clear everything locally
+        handleLocalLogout(false); // Pass false to not show the local logout toast
+        return;
+      }
+      
+      // Call the logout API
+      const res = await axios.delete(`${base_url}/api/logout`, {
+        headers: {
+          Authorization: `Bearer ${accessToken}`,
+          'X-TestAccessToken': `Bearer ${testaccessToken}`
+        }
+      });
+      
+      if (res.status === 200) {
+        // Success message will be shown from the local logout function
+        handleLocalLogout(false, res.data.message || 'Logged out successfully');
+      }
+    } catch (error) {
+      console.error('Error during logout:', error);
+      
+      if (error.response && error.response.status === 401) {
+        handleLocalLogout(false, 'Session already expired');
+      } else {
+        handleLocalLogout(false, 'Server logout failed, but you\'ve been logged out locally');
+      }
+    }
+  };
+  
+  // Separate function to handle the local logout operations
+  const handleLocalLogout = (showDefaultToast = true, customMessage = null) => {
+    // Clear Redux state
     dispatch(set_user_info({ username: '', id: '', profile_pic: '' }));
+    
+    // Clear all auth cookies
     Cookies.remove('accessToken');
     Cookies.remove('refreshToken');
+    Cookies.remove('testaccessToken');
+    
+    // Show toast for feedback - either the custom message or the default
+    if (customMessage) {
+      toast.success(customMessage, { duration: 2000 });
+    } else if (showDefaultToast) {
+      toast.success('Logging out...', { duration: 2000 });
+    }
+    
+    // Redirect after a short delay to allow the toast to be seen
     setTimeout(() => {
-      toast.success('Logged out successfully 👍');
       window.location.href = '/login';
-    }, 3000);
-  }
+    }, 2000);
+  };
 
   const handleOutsideClick = (e) => {
     if (menuref.current && imageref.current) {

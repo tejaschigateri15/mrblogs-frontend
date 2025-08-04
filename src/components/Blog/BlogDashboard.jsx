@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import '../css/blogdashboard.css';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faBoxArchive, faEdit, faTrash, faUserSecret } from '@fortawesome/free-solid-svg-icons';
+import { faBoxArchive, faEdit, faEye, faTrash, faUserSecret } from '@fortawesome/free-solid-svg-icons';
 import { useSelector } from 'react-redux';
 import axios from 'axios';
 import { Toaster, toast } from 'sonner';
@@ -10,6 +10,7 @@ import MainblogLoader from '../user-credientials/MainblogLoader';
 import PrivateToggleDialog from './PrivateToggleDialog';
 import DeleteConfirmationDialog from './Deletedialog';
 import EditConfirmationDialog from './EditConfirmationDialog';
+import Cookies from 'js-cookie';
 
 export default function BlogDashboard() {
   const base_url = import.meta.env.VITE_URL || 'http://localhost:8080';
@@ -28,16 +29,38 @@ export default function BlogDashboard() {
   const [blogToDelete, setBlogToDelete] = useState(null);
   const [blogToEdit, setBlogToEdit] = useState(null);
 
+  const testaccessToken = Cookies.get('testaccessToken')
+
   async function confirmdeletex() {
+    if (!testaccessToken) {
+      toast.error('Please login to delete the blog', { duration: 2000 });
+      return;
+    }
     try {
-      const res = await axios.delete(`${base_url}/api/deleteblog/${blogToDelete}`);
+      const res = await axios.delete(`${base_url}/api/deleteblog/${blogToDelete}`, {
+        headers: {
+          'X-TestAccessToken': `Bearer ${testaccessToken}`
+        }
+      });
       if (res.status === 200) {
         toast.success('Blog Deleted Successfully', { duration: 2000 });
         setBlogs(prevBlogs => prevBlogs.filter(blog => blog._id !== blogToDelete));
       }
     } catch (error) {
-      toast.error('Error Deleting Blog', { duration: 2000 });
       console.error(error);
+      if (error.response && error.response.status === 401) {
+        toast.error('Session expired. Please login again to continue.', {
+          duration: 3000,
+          dismissible: true,
+          action: {
+            label: 'Login',
+            onClick: () => window.location.href = '/login' // Redirect to login page
+          },
+          onAutoClose: () => console.log('Toast closed automatically after timeout')
+        });
+      } else {
+        toast.error('Error Deleting Blog', { duration: 2000 });
+      }
     } finally {
       setIsDeleteDialogOpen(false);
       setBlogToDelete(null);
@@ -68,19 +91,40 @@ export default function BlogDashboard() {
 
   const handleConfirmPrivate = async () => {
     if (!selectedBlog) return;
-
+  
+    if (!testaccessToken) {
+      toast.error('Please login to update blog privacy', { duration: 2000 });
+      return;
+    }
+  
     try {
-      const res = await axios.get(`${base_url}/api/togglePrivate/${selectedBlog.id}`);
+      const res = await axios.get(`${base_url}/api/togglePrivate/${selectedBlog.id}`, {
+        headers: {
+          'X-TestAccessToken': `Bearer ${testaccessToken}`
+        }
+      });
       const newPrivateStatus = res.data;
       
       setBlogs(prevBlogs => prevBlogs.map(blog => 
         blog._id === selectedBlog.id ? { ...blog, isPrivate: newPrivateStatus } : blog
       ));
-
+  
       toast.success(`Blog Made ${newPrivateStatus ? 'Private' : 'Public'} Successfully`, { duration: 2000 });
     } catch (error) {
-      toast.error('Error Updating Blog Privacy', { duration: 2000 });
       console.error(error);
+      if (error.response && error.response.status === 401) {
+        toast.error('Session expired. Please login again to continue.', {
+          duration: 3000,
+          dismissible: true,
+          action: {
+            label: 'Login',
+            onClick: () => window.location.href = '/login' // Redirect to login page
+          },
+          onAutoClose: () => console.log('Toast closed automatically after timeout')
+        });
+      } else {
+        toast.error('Error Updating Blog Privacy', { duration: 2000 });
+      }
     } finally {
       setIsPrivateDialogOpen(false);
     }
@@ -151,6 +195,13 @@ export default function BlogDashboard() {
                 <img src="/blogging.png" alt="" width="26px" />
               </div>
               <p className='text-6xl mx-10 my-3 text-zinc-600'>{blogs.length || 0}</p>
+            </div>
+            <div className="views flex flex-col">
+              <div className='flex gap-2 items-center'>
+                <h2 className='text-xl'>Views</h2>
+                <FontAwesomeIcon icon={faEye} className='mt-1' style={{ width: '26px', height: '26px' }} />
+              </div>
+              <p className='text-6xl mx-4 my-3 text-zinc-600'>{blogs.reduce((total, blog) => total + (blog.views?.count || 0), 0)}</p>
             </div>
             <div className="totalcomments flex flex-col">
               <div className='flex gap-2 items-center'>

@@ -20,6 +20,7 @@ import ErrorPage from './Error.jsx';
 import NewBlog from './components/Blog/NewBlog.jsx';
 import ForgotPassword from './components/user-credientials/ForgotPassword.jsx';
 import ResetPassword from './components/user-credientials/ResetPassword.jsx';
+import Testsubscription from './components/Testsubscription.jsx';
 
 
 
@@ -39,7 +40,8 @@ function App() {
             <Route path="writeblog" element={<Createblog />} />
             <Route path="editblog/:id" element={<Editblog />} />
             <Route path="editprofile" element={<Twstest />} />
-            <Route path="test" element={<UseProfile />} />
+           
+            {/* <Route path="test" element={<UseProfile />} /> */}
             <Route path="blogdashboard" element={<BlogDashboard />} />
             <Route path="blog/:id" element={<Currentblog />} />
             <Route path="topic/:tag" element={<Blogtopics />} />
@@ -48,6 +50,7 @@ function App() {
 
           </Route>
           <Route path="login" element={<Signin />} />
+          <Route path="test" element={<Testsubscription />} />
           <Route path="signup" element={<Signup />} />
           <Route path="forgotpassword" element={<ForgotPassword />} />
           <Route path="reset-password" element={<ResetPassword />} />

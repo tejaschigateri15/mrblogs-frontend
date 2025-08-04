@@ -36,6 +36,7 @@ export default function Currentblog() {
   const [isLiked, setIsLiked] = useState(false);
   const [isSaved, setIsSaved] = useState(false);
   const accessToken = useSelector(state => state.user_info.accessToken);
+  const testaccessToken = Cookies.get('testaccessToken')
   const asc = Cookies.get('accessToken')
   const commentSectionRef = useRef(null);
 
@@ -95,19 +96,45 @@ export default function Currentblog() {
   const handleComment = async () => {
     if (asc) {
       try {
-        const res = await axios.post(`${base_url}/api/postcomment`, formdata);
+        const testaccessToken = Cookies.get('testaccessToken');
+        if (!testaccessToken) {
+          toast.error('Test access token is missing. Please login again.', { duration: 2000 });
+          return;
+        }
+        
+        const res = await axios.post(
+          `${base_url}/api/postcomment`, 
+          formdata,
+          {
+            headers: {
+              Authorization: `Bearer ${accessToken}`,
+              'X-TestAccessToken': `Bearer ${testaccessToken}`
+            },
+          }
+        );
+        
         if (res.data) {
-          // console.log('comment posted successfully');
           toast.success('Comment posted successfully', { duration: 2000 });
-          setTimeout(() => { window.location.reload() }, 2000)
-
+          setTimeout(() => { window.location.reload() }, 2000);
         }
         setComment('');
       } catch (err) {
         console.error(err);
+        if (err.response && err.response.status === 401) {
+          toast.error('Session expired. Please login again to continue.', {
+            duration: 3000,
+            dismissible: true,
+            action: {
+              label: 'Login',
+              onClick: () => window.location.href = '/login' // Redirect to login page
+            },
+            onAutoClose: () => console.log('Toast closed automatically after timeout')
+          });
+        } else {
+          toast.error('Failed to post comment. Please try again.', { duration: 2000 });
+        }
       }
-    }
-    else {
+    } else {
       toast.error('Please login to comment on the blog', { duration: 2000 });
     }
   };
@@ -200,38 +227,91 @@ export default function Currentblog() {
   const handleLike = async () => {
     if (asc) {
       try {
-        const res = await axios.post(`${base_url}/api/likeblog`, { blog_id: paramss.id, username: username });
+        const testaccessToken = Cookies.get('testaccessToken');
+        if (!testaccessToken) {
+          toast.error('Test access token is missing. Please login again.', { duration: 2000 });
+          return;
+        }
+        
+        const res = await axios.post(
+          `${base_url}/api/likeblog`, 
+          { blog_id: paramss.id, username: username },
+          {
+            headers: {
+              Authorization: `Bearer ${accessToken}`,
+              'X-TestAccessToken': `Bearer ${testaccessToken}`
+            },
+          }
+        );
+        
         if (res.data) {
           toast.success('Blog liked successfully', { duration: 2000 });
-          setIsLiked(true)
+          setIsLiked(true);
         }
       } catch (err) {
         console.error(err);
+        if (err.response && err.response.status === 401) {
+          toast.error('Session expired. Please login again to continue.', {
+            duration: 3000,
+            dismissible: true,
+            action: {
+              label: 'Login',
+              onClick: () => window.location.href = '/login' // Redirect to login page
+            },
+            onAutoClose: () => console.log('Toast closed automatically after timeout')
+          });
+        } else {
+          toast.error('Failed to like the blog. Please try again.', { duration: 2000 });
+        }
       }
-    }
-    else {
+    } else {
       toast.error('Please login to like the blog', { duration: 2000 });
     }
   }
 
   const handleSummarize = async () => {
     if (asc) {
-
-      setIsClicked(true)
+      setIsClicked(true);
       try {
-        const res = await axios.post(`${base_url}/api/summarize`, { body: blogbody });
-      
+        const testaccessToken = Cookies.get('testaccessToken');
+        if (!testaccessToken) {
+          toast.error('Test access token is missing. Please login again.', { duration: 2000 });
+          return;
+        }
+  
+        const res = await axios.post(
+          `${base_url}/api/summarize`, 
+          { body: blogbody }, 
+          {
+            headers: {
+              Authorization: `Bearer ${accessToken}`,
+              'X-TestAccessToken': `Bearer ${testaccessToken}`
+            },
+          }
+        );
+        
         if (res.data) {
           setIsLoading(true);
           const cleanedHtmlCode = res.data.replace(/^```html\s*|\s*```$/g, '');
           setSummarizedText(cleanedHtmlCode);
-          
         }
       } catch (err) {
         console.error(err);
+        if (err.response && err.response.status === 401) {
+          toast.error('Session expired. Please login again to continue.', {
+            duration: 3000,
+            dismissible: true,
+            action: {
+              label: 'Login',
+              onClick: () => window.location.href = '/login' // Redirect to login page
+            },
+            onAutoClose: () => console.log('Toast closed automatically after timeout')
+          });
+        } else {
+          toast.error('Failed to summarize the blog. Please try again.', { duration: 2000 });
+        }
       }
-    }
-    else {
+    } else {
       toast.error('Please login to summarize the blog', { duration: 2000 });
     }
   }
@@ -239,28 +319,27 @@ export default function Currentblog() {
   const handlesave = async (id) => {
     if (asc) {
       try {
-        const res = await axios.post(`${base_url}/api/saveblog`, {
-          username: username,
-          blog_id: id
-        });
+        const res = await axios.post(
+          `${base_url}/api/saveblog`, 
+          {
+            username: username,
+            blog_id: id
+          },
+        );
       
         if (res.data) {
-          toast.success('Blog saved successfully');
+          toast.success('Blog saved successfully', { duration: 2000 });
           setIsSaved(true);
-
         }
-
       } catch (err) {
         console.error(err);
+        toast.error('Failed to save the blog. Please try again.', { duration: 2000 });
       }
     }
     else {
       toast.error('Please login to save the blog', { duration: 2000 });
     }
   }
-
-
-
 
   return (
     <div className="containere">

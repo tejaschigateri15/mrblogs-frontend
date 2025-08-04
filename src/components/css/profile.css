@@ -171,15 +171,6 @@
     /* font-size: 12px; */
 }
 
-/* .profilepic p:hover{
-    color: #7856ff;
-    #4b5563
-    transition: 0.3s ease-in-out;
-    
-    cursor: pointer;
-} */
-
-
 #upload-photo{
     display: none;
 }
@@ -317,15 +308,6 @@
         text-align: justify;
     }
 
-    /* #xcv{
-        width: 30px;
-        height: 30px;
-        border-radius: 25px;
-    }
-
-    .profilecard{
-
-    } */
 
     .profileitems{
         display: flex;
