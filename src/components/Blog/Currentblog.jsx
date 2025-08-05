@@ -4,9 +4,8 @@ import { useEffect, useRef, useState } from 'react';
 import axios from 'axios';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faArrowUp, faBookmark, faComment, faHeart } from '@fortawesome/free-solid-svg-icons';
-import { useDispatch, useSelector } from 'react-redux';
+import { useSelector } from 'react-redux';
 import { Toaster, toast } from 'sonner'
-import { set_user_info } from '../state';
 import Test2 from '../user-credientials/Test2';
 import { TextGenerateEffect } from '../../UI/TextGenerateEffect';
 import Cookies from 'js-cookie';
@@ -21,8 +20,6 @@ export default function Currentblog() {
   const base_url = import.meta.env.VITE_URL || 'http://localhost:8080';
 
   const username = useSelector((state) => state.user_info.username);
-  const user_img = useSelector((state) => state.user_info.profile_pic);
-  const dispatch = useDispatch()
 
   const paramss = useParams();
   const [blog, setBlog] = useState({});
@@ -35,8 +32,10 @@ export default function Currentblog() {
   const [summarizedText, setSummarizedText] = useState('');
   const [isLiked, setIsLiked] = useState(false);
   const [isSaved, setIsSaved] = useState(false);
+  const [isLiking, setIsLiking] = useState(false);
+  const [isSaving, setIsSaving] = useState(false);
+  const [isCommenting, setIsCommenting] = useState(false);
   const accessToken = useSelector(state => state.user_info.accessToken);
-  const testaccessToken = Cookies.get('testaccessToken')
   const asc = Cookies.get('accessToken')
   const commentSectionRef = useRef(null);
 
@@ -95,6 +94,12 @@ export default function Currentblog() {
 
   const handleComment = async () => {
     if (asc) {
+      if (!comment.trim()) {
+        toast.error('Please enter a comment', { duration: 2000 });
+        return;
+      }
+
+      setIsCommenting(true);
       try {
         const testaccessToken = Cookies.get('testaccessToken');
         if (!testaccessToken) {
@@ -115,9 +120,9 @@ export default function Currentblog() {
         
         if (res.data) {
           toast.success('Comment posted successfully', { duration: 2000 });
+          setComment('');
           setTimeout(() => { window.location.reload() }, 2000);
         }
-        setComment('');
       } catch (err) {
         console.error(err);
         if (err.response && err.response.status === 401) {
@@ -133,6 +138,8 @@ export default function Currentblog() {
         } else {
           toast.error('Failed to post comment. Please try again.', { duration: 2000 });
         }
+      } finally {
+        setIsCommenting(false);
       }
     } else {
       toast.error('Please login to comment on the blog', { duration: 2000 });
@@ -171,39 +178,25 @@ export default function Currentblog() {
 
     fetchblog();
 
-    const fetchProfile = async () => {
-      try {
-        const response = await axios.get(`${base_url}/getprofile`, {
-          params: {
-            username: username
-          }
-        });
-
-        const { name, profile_pic } = response.data;
-        dispatch(set_user_info({ username, id: '1', profile_pic }));
-
-      } catch (error) {
-        console.error('Error fetching profile:', error);
-      }
-    };
-
-    // fetchProfile();
-
     const fetchlikesandsaved = async () => {
-      const res = await axios.get(`${base_url}/api/getlikesandsaved`, {
-        params: {
-          username: username,
-          blog_id: paramss.id
+      try {
+        const res = await axios.get(`${base_url}/api/getlikesandsaved`, {
+          params: {
+            username: username,
+            blog_id: paramss.id
+          }
+        })
+        if (res.data) {
+        
+          const { liked, saved } = res.data;
+          setIsLiked(liked);
+          setIsSaved(saved);
+         
         }
-      })
-      if (res.data) {
-      
-        const { liked, saved } = res.data;
-        setIsLiked(liked);
-        setIsSaved(saved);
-       
+      } catch (error) {
+        console.error('Error fetching likes and saved status:', error);
+        // Don't show toast for this as it's not critical and runs in background
       }
-
     }
 
     if (typeof asc !== 'undefined') {
@@ -212,7 +205,7 @@ export default function Currentblog() {
 
 
 
-  }, [paramss.id]);
+  }, [paramss.id, base_url, username, asc]);
 
   const [readTime, setReadTime] = useState(0);
 
@@ -226,6 +219,7 @@ export default function Currentblog() {
 
   const handleLike = async () => {
     if (asc) {
+      setIsLiking(true);
       try {
         const testaccessToken = Cookies.get('testaccessToken');
         if (!testaccessToken) {
@@ -234,7 +228,7 @@ export default function Currentblog() {
         }
         
         const res = await axios.post(
-          `${base_url}/api/likeblog`, 
+          `${base_url}/api/togglelike`, 
           { blog_id: paramss.id, username: username },
           {
             headers: {
@@ -245,8 +239,12 @@ export default function Currentblog() {
         );
         
         if (res.data) {
-          toast.success('Blog liked successfully', { duration: 2000 });
-          setIsLiked(true);
+          // Use the response from backend for consistency
+          const newLikeState = res.data.isLiked;
+          const message = res.data.message || (newLikeState ? 'Blog liked successfully' : 'Blog unliked successfully');
+          
+          toast.success(message, { duration: 2000 });
+          setIsLiked(newLikeState);
         }
       } catch (err) {
         console.error(err);
@@ -261,8 +259,11 @@ export default function Currentblog() {
             onAutoClose: () => console.log('Toast closed automatically after timeout')
           });
         } else {
-          toast.error('Failed to like the blog. Please try again.', { duration: 2000 });
+          const action = isLiked ? 'unlike' : 'like';
+          toast.error(`Failed to ${action} the blog. Please try again.`, { duration: 2000 });
         }
+      } finally {
+        setIsLiking(false);
       }
     } else {
       toast.error('Please login to like the blog', { duration: 2000 });
@@ -271,7 +272,11 @@ export default function Currentblog() {
 
   const handleSummarize = async () => {
     if (asc) {
+      // Reset states at the beginning of each summarize request
       setIsClicked(true);
+      setIsLoading(false);
+      setSummarizedText('');
+      
       try {
         const testaccessToken = Cookies.get('testaccessToken');
         if (!testaccessToken) {
@@ -291,12 +296,17 @@ export default function Currentblog() {
         );
         
         if (res.data) {
-          setIsLoading(true);
           const cleanedHtmlCode = res.data.replace(/^```html\s*|\s*```$/g, '');
           setSummarizedText(cleanedHtmlCode);
+          setIsLoading(true);
         }
       } catch (err) {
         console.error(err);
+        // Reset states on error
+        setIsClicked(false);
+        setIsLoading(false);
+        setSummarizedText('');
+        
         if (err.response && err.response.status === 401) {
           toast.error('Session expired. Please login again to continue.', {
             duration: 3000,
@@ -318,22 +328,54 @@ export default function Currentblog() {
 
   const handlesave = async (id) => {
     if (asc) {
+      setIsSaving(true);
       try {
+        const testaccessToken = Cookies.get('testaccessToken');
+        if (!testaccessToken) {
+          toast.error('Test access token is missing. Please login again.', { duration: 2000 });
+          return;
+        }
+
         const res = await axios.post(
-          `${base_url}/api/saveblog`, 
+          `${base_url}/api/togglesave`, 
           {
             username: username,
             blog_id: id
           },
+          {
+            headers: {
+              Authorization: `Bearer ${accessToken}`,
+              'X-TestAccessToken': `Bearer ${testaccessToken}`
+            },
+          }
         );
       
         if (res.data) {
-          toast.success('Blog saved successfully', { duration: 2000 });
-          setIsSaved(true);
+          // Use the response from backend for consistency
+          const newSavedState = res.data.isSaved;
+          const message = res.data.message || (newSavedState ? 'Blog saved successfully' : 'Blog unsaved successfully');
+          
+          toast.success(message, { duration: 2000 });
+          setIsSaved(newSavedState);
         }
       } catch (err) {
         console.error(err);
-        toast.error('Failed to save the blog. Please try again.', { duration: 2000 });
+        if (err.response && err.response.status === 401) {
+          toast.error('Session expired. Please login again to continue.', {
+            duration: 3000,
+            dismissible: true,
+            action: {
+              label: 'Login',
+              onClick: () => window.location.href = '/login'
+            },
+            onAutoClose: () => console.log('Toast closed automatically after timeout')
+          });
+        } else {
+          const action = isSaved ? 'unsave' : 'save';
+          toast.error(`Failed to ${action} the blog. Please try again.`, { duration: 2000 });
+        }
+      } finally {
+        setIsSaving(false);
       }
     }
     else {
@@ -371,13 +413,14 @@ export default function Currentblog() {
                   </div>
                 </div>
                 <div className="likecommsave mt-6 flex gap-6">
-                  <button onClick={handleLike}>
+                  <button onClick={handleLike} disabled={isLiking}>
                     <FontAwesomeIcon
                       icon={faHeart}
                       style={{
                         fontSize: "20px",
                         color: isLiked ? "red" : "rgb(220, 216, 216)",
-                        cursor: "pointer"
+                        cursor: isLiking ? "not-allowed" : "pointer",
+                        opacity: isLiking ? 0.6 : 1
                       }}
 
                     />
@@ -392,10 +435,15 @@ export default function Currentblog() {
                       onClick={handleCommentIconClick}
                     />
                   </button>
-                  <button onClick={() => handlesave(paramss.id)}>
+                  <button onClick={() => handlesave(paramss.id)} disabled={isSaving}>
                     <FontAwesomeIcon
                       icon={faBookmark}
-                      style={{ fontSize: "20px", color: isSaved ? "black" : "rgb(220, 216, 216)", }}
+                      style={{ 
+                        fontSize: "20px", 
+                        color: isSaved ? "black" : "rgb(220, 216, 216)",
+                        cursor: isSaving ? "not-allowed" : "pointer",
+                        opacity: isSaving ? 0.6 : 1
+                      }}
                     />
                   </button>
                 </div>
@@ -408,7 +456,22 @@ export default function Currentblog() {
             <img src={blog.blog_image} alt="" />
           </div>
           <div className="summarise flex justify-center">
-            <button className='flex gap-2 item-center justify-center bg-neutral-200 px-4 py-2 rounded-full ' onClick={handleSummarize}><img src="/google-gemini-icon.png" alt="" width="25px" height="25px" /><p className='summarize'>Sumarize this</p></button>
+            {!isClicked ? (
+              <button className='flex gap-2 item-center justify-center bg-neutral-200 px-4 py-2 rounded-full ' onClick={handleSummarize}>
+                <img src="/google-gemini-icon.png" alt="" width="25px" height="25px" />
+                <p className='summarize'>Summarize this</p>
+              </button>
+            ) : (
+              <div className="flex gap-4">
+                <button className='flex gap-2 item-center justify-center bg-neutral-200 px-4 py-2 rounded-full ' onClick={handleSummarize}>
+                  <img src="/google-gemini-icon.png" alt="" width="25px" height="25px" />
+                  <p className='summarize'>Summarize again</p>
+                </button>
+                <button className='flex gap-2 item-center justify-center bg-blue-500 text-white px-4 py-2 rounded-full ' onClick={() => { setIsClicked(false); setIsLoading(false); setSummarizedText(''); }}>
+                  <p>Back to Original</p>
+                </button>
+              </div>
+            )}
           </div>
           <div className="mainblogbody">
             {!isClicked ? <div className="blog-bodies" dangerouslySetInnerHTML={{ __html: blogbody }}></div> : !isLoading ? <div className='text-loader'><Test2 /></div> : <TextGenerateEffect words={summarizedText} />}
@@ -419,9 +482,14 @@ export default function Currentblog() {
               <h2>Comment </h2>
             </div>
             <div className="commentbox">
-              <input type="text" placeholder="Post your comment" onChange={(e) => setComment(e.target.value)} />
-              <button className="shadow-md cccc" onClick={handleComment}>
-                Post <FontAwesomeIcon icon={faArrowUp} />
+              <input 
+                type="text" 
+                placeholder="Post your comment" 
+                value={comment}
+                onChange={(e) => setComment(e.target.value)} 
+              />
+              <button className="shadow-md cccc" onClick={handleComment} disabled={isCommenting}>
+                {isCommenting ? 'Posting...' : 'Post'} <FontAwesomeIcon icon={faArrowUp} />
               </button>
             </div>
             <div className="showcomments">
@@ -447,7 +515,7 @@ export default function Currentblog() {
                   </div>
                 ))
               ) : (
-                <div className="nocomments"><p>Looks like it's quiet here. Why not start the conversation?</p></div>
+                <div className="nocomments"><p>Looks like it&apos;s quiet here. Why not start the conversation?</p></div>
               )}
             </div>
 

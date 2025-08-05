@@ -39,6 +39,7 @@ export default function Mainpage() {
     const [scrollPosition, setScrollPosition] = useState(0);
     const [scrollLength, setScrollLength] = useState(0);
     const [savedblogId, setSavedBlogId] = useState([]);
+    const [isSaving, setIsSaving] = useState(false);
     const [profilepic, setProfilePic] = useState(null);
 
     const dispatch = useDispatch();
@@ -139,20 +140,63 @@ export default function Mainpage() {
 
 
     const handlesave = async (id) => {
-        try {
-            const res = await axios.post(`${base_url}/api/saveblog`, {
-                username: username,
-                blog_id: id
-            });
-            // console.log(res.data);
-            if (res.data) {
-                setSavedBlogId([...savedblogId, id]);
-                toast.success('Blog saved successfully');
+        if (asc) {
+            setIsSaving(true);
+            try {
+                const testaccessToken = Cookies.get('testaccessToken');
+                if (!testaccessToken) {
+                    toast.error('Test access token is missing. Please login again.', { duration: 2000 });
+                    return;
+                }
 
+                const res = await axios.post(
+                    `${base_url}/api/togglesave`, 
+                    {
+                        username: username,
+                        blog_id: id
+                    },
+                    {
+                        headers: {
+                            Authorization: `Bearer ${asc}`,
+                            'X-TestAccessToken': `Bearer ${testaccessToken}`
+                        },
+                    }
+                );
+
+                if (res.data) {
+                    // Use the response from backend for consistency
+                    const newSavedState = res.data.isSaved;
+                    const message = res.data.message || (newSavedState ? 'Blog saved successfully' : 'Blog unsaved successfully');
+                    
+                    toast.success(message, { duration: 2000 });
+                    
+                    if (newSavedState) {
+                        setSavedBlogId([...savedblogId, id]);
+                    } else {
+                        setSavedBlogId(savedblogId.filter(blogId => blogId !== id));
+                    }
+                }
+            } catch (err) {
+                console.error(err);
+                if (err.response && err.response.status === 401) {
+                    toast.error('Session expired. Please login again to continue.', {
+                        duration: 3000,
+                        dismissible: true,
+                        action: {
+                            label: 'Login',
+                            onClick: () => window.location.href = '/login'
+                        },
+                        onAutoClose: () => console.log('Toast closed automatically after timeout')
+                    });
+                } else {
+                    const action = savedblogId.includes(id) ? 'unsave' : 'save';
+                    toast.error(`Failed to ${action} the blog. Please try again.`, { duration: 2000 });
+                }
+            } finally {
+                setIsSaving(false);
             }
-
-        } catch (err) {
-            console.error(err);
+        } else {
+            toast.error('Please login to save the blog', { duration: 2000 });
         }
     }
 
@@ -268,14 +312,14 @@ export default function Mainpage() {
                                                         </div>
                                                     </div>
                                                     <div className="saveicon">
-                                                        <button onClick={() => handlesave(blog._id)}>
-                                                            <Tooltip title="Save Blog" arrow>
+                                                        <button onClick={() => handlesave(blog._id)} disabled={isSaving}>
+                                                            <Tooltip title={savedblogId.includes(blog._id) ? "Unsave Blog" : "Save Blog"} arrow>
                                                                 <FontAwesomeIcon
                                                                     icon={faBookmark}
                                                                     style={{
                                                                         color: !savedblogId.includes(blog._id) ? 'rgb(220, 216, 216)' : 'black',
-                                                                        // fontSize: '20px',
-                                                                        cursor: 'pointer',
+                                                                        cursor: isSaving ? "not-allowed" : "pointer",
+                                                                        opacity: isSaving ? 0.6 : 1,
                                                                         backgroundColor: 'white',
                                                                     }}
                                                                 />
